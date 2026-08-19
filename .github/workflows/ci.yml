@@ -18,6 +18,6 @@ jobs:
       - name: Install test dependencies
         run: pip install pytest numpy soundfile
       - name: Byte-compile all sources
-        run: python -m compileall -q app engine bot.py smoke_test.py
+        run: python -m compileall -q app engine bot.py scripts
       - name: Run tests
         run: python -m pytest -q

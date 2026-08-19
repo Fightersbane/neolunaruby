@@ -23,7 +23,7 @@ text says only "accessibility tool"; no personal details about users.
 - Tests (all, hardware-free): `.venv\Scripts\python.exe -m pytest -q`
 - Desktop app: `.venv\Scripts\python.exe -m app.main`
 - Headless mic mode: `.venv\Scripts\python.exe -m engine --device cable`
-- Voice check (cold/warm latency + wav): `.venv\Scripts\python.exe smoke_test.py "text"`
+- Voice check (cold/warm latency + wav): `.venv\Scripts\python.exe scripts\smoke_test.py "text"`
 - Install deps: `pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128`
 
 ## Git flow

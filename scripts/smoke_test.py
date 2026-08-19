@@ -10,8 +10,11 @@ how Miku it sounds. Tune pipeline.SETTINGS from what you hear.
 import asyncio
 import sys
 import time
+from pathlib import Path
 
-from engine import pipeline
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from engine import pipeline  # noqa: E402
 
 
 async def main() -> None:

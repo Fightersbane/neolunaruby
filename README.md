@@ -43,16 +43,9 @@ The app derives invite and install links from the token and enables user-install
 python -m app.main        # desktop app
 python -m engine --device cable   # headless: type lines, speak through the virtual mic
 python bot.py             # standalone Discord bot only
-python smoke_test.py "test line"  # synthesize to a wav and print latency
 ```
 
-## Development
-
-```powershell
-python -m pytest -q
-```
-
-Tests are hardware-free (audio and GPU layers are faked), and CI runs them on every push. Performance-critical notes live in [`claude.md`](claude.md) and in `engine/pipeline.py` comments. Planned work: slim build, Windows installer, Linux support - see [`docs/superpowers/specs/`](docs/superpowers/specs/) and [`CHANGELOG.md`](CHANGELOG.md).
+Planned: Windows installer and Linux support - see [`CHANGELOG.md`](CHANGELOG.md) for what each version added. Contributing or curious how it works? See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## License
 
