@@ -1,4 +1,13 @@
-from app import setup_wizard
+from app import setup_wizard, updater
+
+
+class TestUpdaterMode:
+    def test_git_checkout(self, tmp_path):
+        (tmp_path / ".git").mkdir()
+        assert updater.mode(base=tmp_path) == "git"
+
+    def test_installed_copy(self, tmp_path):
+        assert updater.mode(base=tmp_path) == "zip"
 
 
 def _make(base, rel, size=2048):
