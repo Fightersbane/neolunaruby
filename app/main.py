@@ -29,6 +29,9 @@ async def _start_player(player) -> None:
 def _tray_icon_image():
     from PIL import Image, ImageDraw
 
+    icon = BASE.parent / "assets" / "neolunaruby.png"
+    if icon.is_file():
+        return Image.open(icon)
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     d.ellipse((4, 4, 60, 60), fill=(57, 197, 187, 255))  # Miku teal
