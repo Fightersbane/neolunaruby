@@ -81,6 +81,7 @@ def main() -> None:
             allowed_ids=lambda: {int(x) for x in cfg["allowed_dm_users"]},
             guild_id=os.getenv("GUILD_ID"),
             on_status=api.set_discord_status,
+            say_posts_text=lambda: cfg["say_posts_text"],
         )
         api.discord_client = discord_client
         app_id = _app_id_from_token(token)

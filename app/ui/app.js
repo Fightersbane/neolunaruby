@@ -205,6 +205,7 @@ async function init() {
   $("hotkey").value = s.hotkey;
   setModeUI(s.mode);
   $("allowed-ids").value = (s.allowed_dm_users || []).join(", ");
+  $("say-posts-text").checked = !!s.say_posts_text;
   renderDiscord(state.discord || { status: "no token configured" });
   $("chip-version").textContent = `v${state.version || "dev"}`;
 
@@ -258,6 +259,8 @@ document.querySelectorAll(".seg button").forEach((btn) => {
     if (await setSetting("mode", btn.dataset.mode)) setModeUI(btn.dataset.mode);
   };
 });
+
+$("say-posts-text").onchange = (e) => setSetting("say_posts_text", e.target.checked);
 
 $("allowed-save").onclick = async () => {
   if (await setSetting("allowed_dm_users", $("allowed-ids").value)) {

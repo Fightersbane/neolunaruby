@@ -19,11 +19,12 @@ log = logging.getLogger(__name__)
 
 
 class MikuClient(discord.Client):
-    def __init__(self, on_speak, allowed_ids, guild_id=None, on_status=None) -> None:
+    def __init__(self, on_speak, allowed_ids, guild_id=None, on_status=None, say_posts_text=None) -> None:
         super().__init__(intents=discord.Intents.default())
         self.tree = app_commands.CommandTree(self)
         self._on_speak = on_speak          # async (text, origin) -> None
         self._allowed_ids = allowed_ids    # () -> set[int]
+        self._say_posts_text = say_posts_text or (lambda: True)  # () -> bool
         self._guild_id = guild_id
         self._on_status = on_status or (lambda s: None)
         self._voice_lock = asyncio.Lock()
@@ -115,14 +116,20 @@ class MikuClient(discord.Client):
                     ephemeral=True,
                 )
                 return
-            await interaction.response.defer(ephemeral=True)
+            # visible reply = the text lands in the conversation as a transcript;
+            # ephemeral = only the invoker sees the confirmation
+            visible = self._say_posts_text()
+            await interaction.response.defer(ephemeral=not visible)
             try:
                 await self._on_speak(text, "slash")
             except Exception as exc:
                 log.exception("speak from /say failed")
                 await interaction.followup.send(f"Couldn't speak that: {type(exc).__name__}", ephemeral=True)
                 return
-            await interaction.followup.send(f'Speaking: "{text}"', ephemeral=True)
+            if visible:
+                await interaction.followup.send(f"🎤 {text}")
+            else:
+                await interaction.followup.send(f'Speaking: "{text}"', ephemeral=True)
 
         @self.tree.command(description="Bring Miku into your current voice channel")
         @app_commands.guild_only()

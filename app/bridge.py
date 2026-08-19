@@ -134,6 +134,8 @@ class JsApi:
                 return {"ok": False, "error": f"Unknown mode {value!r}."}
         elif key == "allowed_dm_users":
             value = parse_id_list(str(value))
+        elif key == "say_posts_text":
+            value = bool(value)
         else:
             return {"ok": False, "error": f"Unknown setting {key!r}."}
         self._cfg[key] = value
