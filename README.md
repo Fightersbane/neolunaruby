@@ -9,8 +9,9 @@ An accessibility tool for taking part in voice calls by typing. Runs entirely on
 ## Current status
 
 - ✅ **Discord bot** — working. `/say`, `/join`, `/leave`, `/voice` (Miku variants), `/pitch`, `/speed`.
-- 🚧 **Desktop app** — in development: virtual-microphone output (works in DM/group calls and any app), hotkey overlay, system tray, telemetry, message history with replay. Design: [`docs/superpowers/specs/2026-08-19-desktop-app-design.md`](docs/superpowers/specs/2026-08-19-desktop-app-design.md).
-- 🔮 **Planned** — Windows installer, slim build, Linux support, sing/cover mode.
+- ✅ **Desktop app** — working: main window with settings/telemetry/history-replay, global-hotkey overlay, system tray, output-device picker (point it at a virtual cable and it's a microphone in any app). Run: `python -m app.main`. Headless: `python -m engine --device cable`.
+- 🚧 **In development** — Discord DM input (`/say` inside DM conversations), bot-mode toggle in the app.
+- 🔮 **Planned** — Windows installer, slim build, Linux support, sing/cover mode. Design: [`docs/superpowers/specs/2026-08-19-desktop-app-design.md`](docs/superpowers/specs/2026-08-19-desktop-app-design.md).
 
 ## Setup (dev, Windows)
 
