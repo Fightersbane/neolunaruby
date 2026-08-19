@@ -1,21 +1,21 @@
 # neolunamiku
 
-Type it, and Hatsune Miku says it in your voice call. 🎤
+![CI](https://github.com/Fightersbane/neolunamiku/actions/workflows/ci.yml/badge.svg)
 
-An accessibility tool for taking part in voice calls by typing. Runs entirely on your own GPU — text becomes Miku-voiced speech in about a second, spoken into a Discord voice channel today, and (soon) into a virtual microphone that works in any app, DM calls included.
+Type a message and hear it spoken in a Hatsune Miku voice - in a Discord call, a game, or any program that takes microphone input. An accessibility tool for taking part in voice calls by typing.
 
-**Voice pipeline:** [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) local TTS → [RVC](https://github.com/JackismyShephard/ultimate-rvc) voice conversion with a community Miku model → CUDA. No cloud services in the voice path; warm latency ~1.1 s on an RTX 3060 Ti at under 1 GB of VRAM (games run fine alongside it).
+Everything runs on your own GPU. Text goes through [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) (local TTS), then RVC voice conversion with a community Miku model. Warm latency is about 1.1 s on an RTX 3060 Ti at under 1 GB of VRAM, so games run fine alongside it. No cloud services in the voice path.
 
-## Current status
+## What works today (v0.2.0)
 
-- ✅ **Discord bot** — working. `/say`, `/join`, `/leave`, `/voice` (Miku variants), `/pitch`, `/speed`.
-- ✅ **Desktop app** — working: main window with settings/telemetry/history-replay, global-hotkey overlay, system tray, output-device picker (point it at a virtual cable and it's a microphone in any app). Run: `python -m app.main`. Headless: `python -m engine --device cable`.
-- 🚧 **In development** — Discord DM input (`/say` inside DM conversations), bot-mode toggle in the app.
-- 🔮 **Planned** — Windows installer, slim build, Linux support, sing/cover mode. Design: [`docs/superpowers/specs/2026-08-19-desktop-app-design.md`](docs/superpowers/specs/2026-08-19-desktop-app-design.md).
+- **Desktop app** (`python -m app.main`): say box, global-hotkey overlay, system tray, message history with replay, GPU and latency readouts, settings for voice, speed, pitch, and devices.
+- **Virtual microphone**: pick "CABLE Input" as the output and Discord sees Miku as your mic - works in DM calls, group calls, servers, and games. One-click VB-Cable install and a monitor output so you hear what you send.
+- **Discord, three ways**: a server bot (`/say`, `/join`, `/leave`, `/voice`, `/pitch`, `/speed`), plain DMs to the bot, and `/say` inside your own DM conversations after a one-click user install. All Discord input is limited to an allowlist of user IDs, with an optional visible transcript in the chat.
+- **Self-update**: the version chip checks this repo and installs updates only after you confirm.
 
-## Setup (dev, Windows)
+## Setup (Windows)
 
-Requires: Python 3.13, an NVIDIA GPU, [FFmpeg](https://ffmpeg.org) (`winget install Gyan.FFmpeg`).
+Requires Python 3.13, an NVIDIA GPU, and [FFmpeg](https://ffmpeg.org) (`winget install Gyan.FFmpeg`).
 
 ```powershell
 py -3.13 -m venv .venv
@@ -23,37 +23,37 @@ py -3.13 -m venv .venv
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
 ```
 
-**Models** (not bundled — ~1.2 GB total, one time):
+Models (about 1.2 GB, one time, not bundled):
 
-1. A Hatsune Miku **RVC v2** model (`.pth` + `.index`) → `models/voice_models/Miku/`. Community models are on Hugging Face and voice-models.com; use one trained for RVC v2/rmvpe.
-2. Kokoro TTS: [`kokoro-v1.0.onnx` + `voices-v1.0.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases) → `models/kokoro/`.
-3. RMVPE pitch model: [`rmvpe.pt`](https://huggingface.co/JackismyShephard/ultimate-rvc/tree/main/Resources/predictors) → `models/rvc/predictors/`.
+1. A Hatsune Miku **RVC v2** model (`.pth` + `.index`) in `models/voice_models/Miku/`. Community models are on Hugging Face and voice-models.com; pick one trained for RVC v2 with rmvpe.
+2. Kokoro TTS: [`kokoro-v1.0.onnx` and `voices-v1.0.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases) in `models/kokoro/`.
+3. RMVPE pitch model: [`rmvpe.pt`](https://huggingface.co/JackismyShephard/ultimate-rvc/tree/main/Resources/predictors) in `models/rvc/predictors/`.
 
-**Discord bot**: create an application at the [developer portal](https://discord.com/developers/applications), copy the bot token, then:
-
-```powershell
-copy .env.example .env   # paste DISCORD_TOKEN and your server's GUILD_ID
-python bot.py
-```
-
-Invite the bot with scopes `bot` + `applications.commands` and permissions View Channels / Connect / Speak. First launch warms the models (~30 s); after that `/say` responds in about a second.
-
-## Test the voice without Discord
+Discord is optional. To enable it, create an application in the [developer portal](https://discord.com/developers/applications), copy the bot token, then:
 
 ```powershell
-python smoke_test.py "Hello, this is a test"
+copy .env.example .env   # paste DISCORD_TOKEN (GUILD_ID is optional, for instant command sync)
 ```
 
-Prints cold/warm latency and the output wav path. Tune `SETTINGS` in `pipeline.py` (or use `/pitch` and `/speed` live).
+The app derives invite and install links from the token and enables user-install automatically.
+
+## Run
+
+```powershell
+python -m app.main        # desktop app
+python -m engine --device cable   # headless: type lines, speak through the virtual mic
+python bot.py             # standalone Discord bot only
+python smoke_test.py "test line"  # synthesize to a wav and print latency
+```
 
 ## Development
 
 ```powershell
-python -m pytest test_pipeline.py -q
+python -m pytest -q
 ```
 
-Performance-critical details (resident model caching, onnxruntime pinning) are documented in [`claude.md`](claude.md) and as comments in `pipeline.py`.
+Tests are hardware-free (audio and GPU layers are faked), and CI runs them on every push. Performance-critical notes live in [`claude.md`](claude.md) and in `engine/pipeline.py` comments. Planned work: slim build, Windows installer, Linux support - see [`docs/superpowers/specs/`](docs/superpowers/specs/) and [`CHANGELOG.md`](CHANGELOG.md).
 
-## License & credits
+## License
 
-Non-commercial accessibility project. The Miku RVC voice model is community-made, is **not** distributed with this repo, and is for private non-commercial use — don't redistribute it or publish content made with it. Hatsune Miku is © Crypton Future Media. Built on [ultimate-rvc](https://github.com/JackismyShephard/ultimate-rvc), [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx), [discord.py](https://github.com/Rapptz/discord.py), and [VB-Audio Cable](https://vb-audio.com/Cable/) (planned).
+[MIT](LICENSE) for the code here. The Miku voice model is community-made, never distributed with this project, and for private non-commercial use only - do not redistribute it or publish content made with it. Hatsune Miku is a character of Crypton Future Media. Built on [ultimate-rvc](https://github.com/JackismyShephard/ultimate-rvc), [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx), [discord.py](https://github.com/Rapptz/discord.py), and [VB-Audio Cable](https://vb-audio.com/Cable/).
