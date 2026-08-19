@@ -9,8 +9,9 @@ An accessibility tool: a desktop app for speaking in any voice call by typing. T
 ## Requirements (agreed)
 
 - **Mic mode is the priority**; bot mode secondary. One UI; the two *output* modes are mutually exclusive.
-- **Global hotkey overlay** (e.g. Ctrl+Shift+M): always-on-top input box over any game; Enter speaks, Esc hides. Full settings window separate.
-- **Discord DM input**: typing a DM *to the bot* speaks it through the local mic (see Input paths).
+- **Global hotkey overlay**: always-on-top input box over any game; Enter speaks, Esc hides. **Hotkey is user-configurable in settings** (default Ctrl+Shift+M). Full settings window separate.
+- **System tray**: the app minimizes to tray (icon menu: show/hide, quit); the overlay hotkey stays active while trayed.
+- **Discord DM input**: `/say` works inside DM conversations via user-app install; DMing the bot also works (see Input paths).
 - **Speed above all**: type→sound ≤ ~1s (current pipeline: ~1.1s to file; mic mode skips the Discord-bot hop).
 - **Pitch and speed as settings** (sliders) plus voice presets — every preset is labeled Miku; presets differ only in the hidden base voice and transpose. Cloud presets are offline backups.
 - **Telemetry in the UI**: GPU utilization/VRAM, per-message latency, engine state.
@@ -50,10 +51,11 @@ One process, one toolchain. We ship a multi-GB Python+model stack regardless, so
 ## Input paths (any can be active)
 
 1. **App window / hotkey overlay** — primary.
-2. **Discord DM to the bot** — the bot receives DMs (message content in DMs needs no privileged intent) and forwards them to the engine; in mic mode they play through the virtual mic, in bot mode through the VC. Works from a phone. Restricted to configured Discord user IDs.
-3. **Slash commands** — unchanged in bot mode.
+2. **`/say` inside any DM conversation** — the bot is marked *user-installable*; once installed to the speaking user's account, `/say <text>` works inside ordinary DM threads (including DMs with friends). The command shows in the conversation and the engine speaks it. This is an interaction the user invokes — ToS-clean — and is the answer to "type in our DM and have it read aloud".
+3. **DM the bot directly** — plain messages to the bot's DM are spoken (message content in bot DMs needs no privileged intent). Works from a phone. Restricted to configured Discord user IDs.
+4. **Slash commands in servers** — unchanged in bot mode.
 
-Reading a *user account's* DM conversations with other people (self-bots, BetterDiscord/Vencord client mods) is Discord-ToS-forbidden (ban risk) and permanently out of scope. "DM the bot" gives the same convenience legitimately.
+No sanctioned API reads messages *between two user accounts* — automating a user token (self-bot) or modifying the client (BetterDiscord/Vencord forwarders) violates Discord ToS with account-ban risk, and stays permanently out of scope. Path 2 is the legitimate equivalent inside the same DM window.
 
 ## Modes (output)
 
@@ -74,9 +76,17 @@ Phase A: "Update" button = `git pull` + `pip install -r requirements.txt` + engi
 - Phase B: installer with a first-run wizard (model downloads with progress, cable check).
 - The Miku RVC model is never redistributed in repo or installer — first-run download by the user; private non-commercial use.
 
-## Footprint (measured 2026-08-19)
+## Footprint & slim build (a dedicated phase — user priority)
 
-Models 1.24GB (embedder 361MB, Miku index 351MB, kokoro 310MB, rmvpe 173MB, Miku .pth 53MB) + venv 7.3GB (torch/CUDA dominates). Reduction levers, in order of payoff: int8 kokoro variant (310→88MB), vendoring only ultimate-rvc's inference subpackage to drop its gradio/training/yt-dlp deps (venv likely −2GB+), smaller faiss index (quality tradeoff). torch+CUDA (~3GB) is the irreducible cost of GPU RVC.
+Measured 2026-08-19: models 1.24GB (embedder 361MB, Miku index 351MB, kokoro 310MB, rmvpe 173MB, Miku .pth 53MB) + venv 7.3GB (torch/CUDA dominates). The venv is bloated because `ultimate-rvc` ships its whole app: gradio web UI, training stack, yt-dlp, audio-separator, matplotlib, tensorboard — none used by inference.
+
+Slim-build workstream (own phase, before packaging):
+1. **Vendor ultimate-rvc's inference path only** (`rvc/infer` + minimal deps) into `engine/rvc/`, drop the `ultimate-rvc` pip dependency entirely — expected −2 to −3GB and removes ~150 transitive packages.
+2. **int8 kokoro** model variant (310→88MB), quality A/B first.
+3. **Prune torch extras**: torchvision/torchaudio/tensorboard excluded; PyInstaller module excludes for the rest.
+4. Optional Miku index shrink (quality tradeoff — last resort).
+
+Target: ≤4GB installed. torch+CUDA (~3GB) is the irreducible cost of GPU RVC. (audio-separator/pedalboard return later as an optional "sing mode" extra, not in the base install.)
 
 ## Error handling
 
@@ -96,10 +106,11 @@ Models 1.24GB (embedder 361MB, Miku index 351MB, kokoro 310MB, rmvpe 173MB, Miku
 ## Phasing (each phase gets its own implementation plan)
 
 1. **Engine extraction + mic mode**: engine/ package, playback queue → sounddevice, device picker logic, works headless via a tiny CLI. E2E: hear audio on a chosen device.
-2. **App shell**: pywebview window + overlay + hotkey + settings + telemetry + history/replay.
-3. **Discord integration**: bot-DM input, bot output mode toggle.
-4. **Updater + setup script.**
-5. **Packaging/installer**, then **Linux**.
+2. **App shell**: pywebview window + overlay + configurable hotkey + system tray + settings + telemetry + history/replay.
+3. **Discord integration**: user-app `/say` in DMs, DM-the-bot input, bot output mode toggle.
+4. **Slim build** (see Footprint): vendored inference, int8 kokoro, dep pruning.
+5. **Windows installer**: PyInstaller onedir + Inno Setup `.exe` (bundles the app; first-run wizard downloads models and checks VB-Cable; per-machine ~4GB). Updater switches from git-pull to GitHub Releases here.
+6. **Linux.**
 
 ## Future: sing mode & audio lab (scoped, not built)
 

@@ -1,46 +1,58 @@
 # neolunamiku
 
-Discord TTS bot: type `/say <text>`, hear it in a Hatsune Miku voice in your voice channel.
-An accessibility tool for taking part in voice calls by typing.
+Type it, and Hatsune Miku says it in your voice call. 🎤
 
-Pipeline: edge-tts (base English voice) → RVC Miku voice conversion (CUDA) → Discord voice.
+An accessibility tool for taking part in voice calls by typing. Runs entirely on your own GPU — text becomes Miku-voiced speech in about a second, spoken into a Discord voice channel today, and (soon) into a virtual microphone that works in any app, DM calls included.
 
-## Run
+**Voice pipeline:** [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) local TTS → [RVC](https://github.com/JackismyShephard/ultimate-rvc) voice conversion with a community Miku model → CUDA. No cloud services in the voice path; warm latency ~1.1 s on an RTX 3060 Ti at under 1 GB of VRAM (games run fine alongside it).
+
+## Current status
+
+- ✅ **Discord bot** — working. `/say`, `/join`, `/leave`, `/voice` (Miku variants), `/pitch`, `/speed`.
+- 🚧 **Desktop app** — in development: virtual-microphone output (works in DM/group calls and any app), hotkey overlay, system tray, telemetry, message history with replay. Design: [`docs/superpowers/specs/2026-08-19-desktop-app-design.md`](docs/superpowers/specs/2026-08-19-desktop-app-design.md).
+- 🔮 **Planned** — Windows installer, slim build, Linux support, sing/cover mode.
+
+## Setup (dev, Windows)
+
+Requires: Python 3.13, an NVIDIA GPU, [FFmpeg](https://ffmpeg.org) (`winget install Gyan.FFmpeg`).
 
 ```powershell
+py -3.13 -m venv .venv
 .venv\Scripts\activate
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+```
+
+**Models** (not bundled — ~1.2 GB total, one time):
+
+1. A Hatsune Miku **RVC v2** model (`.pth` + `.index`) → `models/voice_models/Miku/`. Community models are on Hugging Face and voice-models.com; use one trained for RVC v2/rmvpe.
+2. Kokoro TTS: [`kokoro-v1.0.onnx` + `voices-v1.0.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases) → `models/kokoro/`.
+3. RMVPE pitch model: [`rmvpe.pt`](https://huggingface.co/JackismyShephard/ultimate-rvc/tree/main/Resources/predictors) → `models/rvc/predictors/`.
+
+**Discord bot**: create an application at the [developer portal](https://discord.com/developers/applications), copy the bot token, then:
+
+```powershell
+copy .env.example .env   # paste DISCORD_TOKEN and your server's GUILD_ID
 python bot.py
 ```
 
-Needs:
-- `.env` with `DISCORD_TOKEN=...` (and optionally `GUILD_ID=...` for instant slash-command sync)
-- A Miku RVC v2 model: `.pth` + `.index` in `models/voice_models/Miku/`
-- FFmpeg on PATH (`winget install Gyan.FFmpeg`)
-- Internet at speak time (edge-tts is a cloud service)
+Invite the bot with scopes `bot` + `applications.commands` and permissions View Channels / Connect / Speak. First launch warms the models (~30 s); after that `/say` responds in about a second.
 
-## Commands
-
-| Command | What it does |
-|---|---|
-| `/say text` | Speak the text in the voice channel (auto-joins yours if needed) |
-| `/join` / `/leave` | Bring Miku into / out of your voice channel |
-| `/pitch -12..12` | Tune the RVC transpose if the voice sounds too low/high |
-| `/voice Ana\|Jenny` | Switch the base TTS voice fed into the Miku model |
-
-## Test without Discord
+## Test the voice without Discord
 
 ```powershell
 python smoke_test.py "Hello, this is a test"
 ```
 
-Prints cold vs. warm synthesis latency (warm should be < 2 s) and the output wav path — listen and tune `SETTINGS` in `pipeline.py`.
+Prints cold/warm latency and the output wav path. Tune `SETTINGS` in `pipeline.py` (or use `/pitch` and `/speed` live).
 
-## Dev
+## Development
 
 ```powershell
 python -m pytest test_pipeline.py -q
 ```
 
-Install deps: `pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128`
+Performance-critical details (resident model caching, onnxruntime pinning) are documented in [`claude.md`](claude.md) and as comments in `pipeline.py`.
 
-The Miku model is for private, non-commercial use — don't redistribute it or publish content with it.
+## License & credits
+
+Non-commercial accessibility project. The Miku RVC voice model is community-made, is **not** distributed with this repo, and is for private non-commercial use — don't redistribute it or publish content made with it. Hatsune Miku is © Crypton Future Media. Built on [ultimate-rvc](https://github.com/JackismyShephard/ultimate-rvc), [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx), [discord.py](https://github.com/Rapptz/discord.py), and [VB-Audio Cable](https://vb-audio.com/Cable/) (planned).
