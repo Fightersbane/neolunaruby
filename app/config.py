@@ -16,6 +16,9 @@ DEFAULTS = {
     "mode": "mic",              # mic = virtual-mic sink, bot = server voice channel
     "allowed_dm_users": [],     # Discord user IDs allowed to speak via DM / user-app /say
     "say_posts_text": True,     # /say also posts the text visibly into the conversation
+    "accept_discord_input": True,  # master switch for /say and DM input
+    "start_with_windows": False,
+    "quick_phrases": ["yes", "no", "one sec", "brb", "haha", "thanks"],
 }
 
 

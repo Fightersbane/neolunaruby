@@ -19,12 +19,14 @@ log = logging.getLogger(__name__)
 
 
 class MikuClient(discord.Client):
-    def __init__(self, on_speak, allowed_ids, guild_id=None, on_status=None, say_posts_text=None) -> None:
+    def __init__(self, on_speak, allowed_ids, guild_id=None, on_status=None, say_posts_text=None,
+                 input_enabled=None) -> None:
         super().__init__(intents=discord.Intents.default())
         self.tree = app_commands.CommandTree(self)
         self._on_speak = on_speak          # async (text, origin) -> None
         self._allowed_ids = allowed_ids    # () -> set[int]
         self._say_posts_text = say_posts_text or (lambda: True)  # () -> bool
+        self._input_enabled = input_enabled or (lambda: True)  # () -> bool
         self._guild_id = guild_id
         self._on_status = on_status or (lambda s: None)
         self._voice_lock = asyncio.Lock()
@@ -97,6 +99,11 @@ class MikuClient(discord.Client):
         text = message.content.strip()
         if not text:
             return
+        if not self._input_enabled():
+            await message.channel.send(
+                "Mic is off."
+            )
+            return
         await self._on_speak(text, "dm")
         try:
             await message.add_reaction("✅")
@@ -111,7 +118,12 @@ class MikuClient(discord.Client):
         stranger and the owner's microphone and settings.
         """
         if self._allowed(interaction.user.id):
-            return False
+            if self._input_enabled():
+                return False
+            await interaction.response.send_message(
+                "Mic is off.", ephemeral=True,
+            )
+            return True
         await interaction.response.send_message(
             f"You're not on the allowlist. Ask the owner to add your ID: `{interaction.user.id}`",
             ephemeral=True,
@@ -120,10 +132,10 @@ class MikuClient(discord.Client):
 
     # ---- commands --------------------------------------------------------
     def _register_commands(self) -> None:
-        @self.tree.command(description="Speak a message in Miku's voice")
+        @self.tree.command(description="Speak a message out loud")
         @app_commands.allowed_installs(guilds=True, users=True)
         @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-        @app_commands.describe(text="What Miku should say")
+        @app_commands.describe(text="What to say")
         async def say(interaction: discord.Interaction, text: str) -> None:
             if await self._denied(interaction):
                 return
@@ -142,7 +154,7 @@ class MikuClient(discord.Client):
             else:
                 await interaction.followup.send(f'Speaking: "{text}"', ephemeral=True)
 
-        @self.tree.command(description="Bring Miku into your current voice channel")
+        @self.tree.command(description="Join your voice channel")
         @app_commands.guild_only()
         async def join(interaction: discord.Interaction) -> None:
             if await self._denied(interaction):
@@ -158,7 +170,7 @@ class MikuClient(discord.Client):
                 await state.channel.connect()
             await interaction.response.send_message(f"Joined {state.channel.name}.", ephemeral=True)
 
-        @self.tree.command(description="Tune Miku's pitch (RVC transpose in semitones)")
+        @self.tree.command(description="Adjust the voice pitch")
         @app_commands.guild_only()
         @app_commands.describe(semitones="Semitones up (+) or down (-)")
         async def pitch(interaction: discord.Interaction, semitones: app_commands.Range[int, -12, 12]) -> None:
@@ -169,7 +181,7 @@ class MikuClient(discord.Client):
             pipeline.SETTINGS["n_semitones"] = semitones
             await interaction.response.send_message(f"Pitch transpose set to {semitones:+d} semitones.", ephemeral=True)
 
-        @self.tree.command(description="Set Miku's speaking speed")
+        @self.tree.command(description="Set the speaking speed")
         @app_commands.guild_only()
         @app_commands.describe(multiplier="1.0 = natural, up to 2.0")
         async def speed(interaction: discord.Interaction, multiplier: app_commands.Range[float, 0.5, 2.0]) -> None:
@@ -180,7 +192,7 @@ class MikuClient(discord.Client):
             pipeline.SETTINGS["speed"] = multiplier
             await interaction.response.send_message(f"Speed set to {multiplier}x.", ephemeral=True)
 
-        @self.tree.command(description="Switch the base TTS voice fed into the Miku model")
+        @self.tree.command(description="Switch the base voice")
         @app_commands.guild_only()
         async def voice(interaction: discord.Interaction, name: str) -> None:
             if await self._denied(interaction):
@@ -204,7 +216,7 @@ class MikuClient(discord.Client):
                 if current.lower() in p.lower()
             ]
 
-        @self.tree.command(description="Disconnect Miku from voice")
+        @self.tree.command(description="Leave the voice channel")
         @app_commands.guild_only()
         async def leave(interaction: discord.Interaction) -> None:
             if await self._denied(interaction):

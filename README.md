@@ -41,6 +41,15 @@ copy .env.example .env   # paste DISCORD_TOKEN (GUILD_ID is optional, for instan
 
 The app derives invite and install links from the token and enables user-install automatically.
 
+## Using it in a call
+
+1. In the app, set **Output device** to `CABLE Input` (the Settings tab offers a one-click install if you don't have it yet), and set **Hear it too** to your headphones so you hear what you send.
+2. In Discord, open **Settings - Voice & Video** and set **Input Device** to `CABLE Output`.
+3. On the same page, turn **off** Noise Suppression, Echo Cancellation and Automatic Gain Control. They are tuned for a human voice in a room and will chop up or mute synthesized speech.
+4. Type in the app, or press the hotkey for the overlay, and you speak in the call.
+
+Quick phrases on the Speak tab send common lines with one click. If you would rather type from Discord itself, add `/say` to your account from the Settings tab, then use it inside any DM.
+
 ## Run
 
 ```powershell

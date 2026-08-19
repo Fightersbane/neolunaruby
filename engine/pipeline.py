@@ -163,6 +163,18 @@ def _get_kokoro():
     return _kokoro
 
 
+def gpu_active() -> bool:
+    """True when the loaded TTS session is really running on CUDA.
+
+    Falling back to CPU is silent but roughly 5x slower, so the app warns.
+    """
+    try:
+        return any("CUDA" in p for p in _get_kokoro().sess.get_providers())
+    except Exception:
+        log.debug("could not read execution providers", exc_info=True)
+        return False
+
+
 def _kokoro_tts_blocking(text: str, out_path: Path) -> None:
     import soundfile as sf
 

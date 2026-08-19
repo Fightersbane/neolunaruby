@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 110
+extend-exclude = ["engine/rvc"]
+
+[tool.ruff.lint]
+# E9: syntax/runtime errors, F: pyflakes (undefined names, unused imports),
+# I: import order. Deliberately narrow - this is a guard, not a style police.
+select = ["E9", "F", "I"]

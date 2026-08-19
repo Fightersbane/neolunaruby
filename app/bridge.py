@@ -4,12 +4,21 @@ import json
 import logging
 import threading
 
-from engine import pipeline, playback
-
 from app import telemetry
 from app.history import History
+from engine import pipeline, playback
 
 log = logging.getLogger(__name__)
+
+
+MAX_PHRASES = 12
+MAX_PHRASE_LEN = 100
+
+
+def parse_phrases(raw: str) -> list[str]:
+    """One quick phrase per line, trimmed and bounded."""
+    lines = [line.strip()[:MAX_PHRASE_LEN] for line in raw.splitlines()]
+    return [line for line in lines if line][:MAX_PHRASES]
 
 
 def parse_id_list(raw: str) -> list[str]:
@@ -136,6 +145,19 @@ class JsApi:
             value = parse_id_list(str(value))
         elif key == "say_posts_text":
             value = bool(value)
+        elif key == "accept_discord_input":
+            value = bool(value)
+        elif key == "quick_phrases":
+            value = parse_phrases(str(value))
+        elif key == "start_with_windows":
+            value = bool(value)
+            from app import startup
+
+            try:
+                startup.set_enabled(value)
+            except OSError as exc:
+                log.exception("startup registry update failed")
+                return {"ok": False, "error": f"Could not change Windows startup: {exc}"}
         else:
             return {"ok": False, "error": f"Unknown setting {key!r}."}
         self._cfg[key] = value
