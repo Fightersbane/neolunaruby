@@ -26,6 +26,28 @@ async def _start_player(player) -> None:
     player.start()
 
 
+def _set_window_icon(title: str) -> None:
+    """Give the window our icon in the taskbar and title bar.
+
+    Without this Windows shows python.exe's icon, since that is the process
+    that owns the window.
+    """
+    import ctypes
+
+    ico = BASE.parent / "assets" / "neolunaruby.ico"
+    if not ico.is_file():
+        return
+    u32 = ctypes.windll.user32
+    hwnd = u32.FindWindowW(None, title)
+    if not hwnd:
+        return
+    IMAGE_ICON, LR_LOADFROMFILE, LR_DEFAULTSIZE, WM_SETICON = 1, 0x10, 0x40, 0x80
+    big = u32.LoadImageW(None, str(ico), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE)
+    small = u32.LoadImageW(None, str(ico), IMAGE_ICON, 16, 16, LR_LOADFROMFILE)
+    u32.SendMessageW(hwnd, WM_SETICON, 1, big)    # ICON_BIG   - taskbar, alt-tab
+    u32.SendMessageW(hwnd, WM_SETICON, 0, small)  # ICON_SMALL - title bar
+
+
 def _tray_icon_image():
     from PIL import Image, ImageDraw
 
@@ -123,6 +145,17 @@ def main() -> None:
         background_color="#0e1416",
     )
     api._windows.extend([window, overlay])
+
+    # Windows picks the taskbar icon from the AppUserModelID's process unless
+    # the window says otherwise; set both so we get our icon, not python.exe's.
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("Fightersbane.neolunaruby")
+    except Exception:
+        log.debug("could not set AppUserModelID", exc_info=True)
+    window.events.shown += lambda: _set_window_icon("neolunaruby")
+    overlay.events.shown += lambda: _set_window_icon("neolunaruby-overlay")
 
     # ---- overlay + hotkey ------------------------------------------------
     def _force_foreground(title: str) -> None:
