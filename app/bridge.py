@@ -99,7 +99,14 @@ class JsApi:
             "presets": list(pipeline.VOICE_PRESETS),
             "last_timing": dict(pipeline.LAST_TIMING),
             "discord": {"status": self.discord_status, **self.discord_links},
+            "version": self._version(),
         }
+
+    @staticmethod
+    def _version() -> str:
+        from app import updater
+
+        return updater.current_version()
 
     def set_setting(self, key: str, value) -> dict:
         if key == "preset":
@@ -182,6 +189,35 @@ class JsApi:
 
         threading.Thread(target=run, daemon=True).start()
         return {"ok": True}
+
+    def check_update(self) -> dict:
+        from app import updater
+
+        try:
+            return {"ok": True, **updater.check()}
+        except Exception as exc:
+            log.exception("update check failed")
+            return {"ok": False, "error": f"Update check failed: {type(exc).__name__}"}
+
+    def apply_update(self) -> dict:
+        def run():
+            from app import updater
+
+            try:
+                self.push({"type": "update", "status": "updating"})
+                updater.apply()
+                self.push({"type": "update", "status": "restarting"})
+                updater.spawn_new_instance()
+                self.quit_app()
+            except Exception as exc:
+                log.exception("update failed")
+                self.push({"type": "update", "status": "failed", "error": str(exc)})
+
+        threading.Thread(target=run, daemon=True).start()
+        return {"ok": True}
+
+    def quit_app(self) -> None:  # replaced by main.py with a full shutdown
+        pass
 
     def open_cable_page(self) -> dict:
         import webbrowser

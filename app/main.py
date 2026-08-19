@@ -176,6 +176,15 @@ def main() -> None:
     if not bind_hotkey(cfg["hotkey"]):
         log.error("Could not bind hotkey %r", cfg["hotkey"])
 
+    def quit_app():
+        for w in (overlay, window):
+            try:
+                w.destroy()
+            except Exception:
+                pass
+
+    api.quit_app = quit_app
+
     # ---- system tray -------------------------------------------------------
     import pystray
 

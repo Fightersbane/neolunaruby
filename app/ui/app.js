@@ -17,6 +17,10 @@ window.onEvent = (evt) => {
     cableStatus(evt);
   } else if (evt.type === "discord") {
     $("discord-status").textContent = evt.status;
+  } else if (evt.type === "update") {
+    if (evt.status === "updating") toast("Updating — this can take a minute…");
+    else if (evt.status === "restarting") toast("Updated. Restarting…");
+    else if (evt.status === "failed") toast(`Update failed: ${evt.error || "unknown error"}`);
   }
 };
 
@@ -198,6 +202,7 @@ async function init() {
   setModeUI(s.mode);
   $("allowed-ids").value = (s.allowed_dm_users || []).join(", ");
   renderDiscord(state.discord || { status: "no token configured" });
+  $("chip-version").textContent = `v${state.version || "dev"}`;
 
   const dev = await pywebview.api.list_devices();
   // settings persist device NAMES; resolve to the current index for the UI
@@ -222,6 +227,16 @@ async function init() {
 window.addEventListener("pywebviewready", init);
 
 // ---------- wiring ----------
+$("chip-version").onclick = async () => {
+  toast("Checking for updates…");
+  const res = await pywebview.api.check_update();
+  if (!res.ok) return toast(res.error);
+  if (res.behind === 0) return toast(`Up to date (v${res.version}).`);
+  if (confirm(`Update available (${res.behind} new change${res.behind > 1 ? "s" : ""}). Update and restart now?`)) {
+    pywebview.api.apply_update();
+  }
+};
+
 $("say-btn").onclick = say;
 $("say-input").addEventListener("keydown", (e) => { if (e.key === "Enter") say(); });
 
