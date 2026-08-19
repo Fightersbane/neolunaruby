@@ -11,7 +11,7 @@ import asyncio
 import sys
 import time
 
-import pipeline
+from engine import pipeline
 
 
 async def main() -> None:

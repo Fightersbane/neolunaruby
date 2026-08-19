@@ -22,7 +22,7 @@ import time
 import uuid
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 VOICE_MODELS_DIR = BASE_DIR / "models" / "voice_models"
 MIKU_DIR = VOICE_MODELS_DIR / "Miku"
 KOKORO_DIR = BASE_DIR / "models" / "kokoro"

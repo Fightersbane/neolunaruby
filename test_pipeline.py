@@ -2,7 +2,7 @@ import os
 import time
 from pathlib import Path
 
-import pipeline
+from engine import pipeline
 
 
 class TestValidateText:
