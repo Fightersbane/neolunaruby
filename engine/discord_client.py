@@ -60,6 +60,19 @@ class MikuClient(discord.Client):
 
     # ---- lifecycle ----------------------------------------------------
     async def setup_hook(self) -> None:
+        # Ensure the app allows BOTH guild install and user install so /say can
+        # be added to personal accounts (visible in DMs) — this replaces the
+        # manual "User Install" toggle in the developer portal.
+        try:
+            from discord.http import Route
+
+            await self.http.request(
+                Route("PATCH", "/applications/@me"),
+                json={"integration_types_config": {"0": {}, "1": {}}},
+            )
+            log.info("Ensured guild+user installation contexts.")
+        except Exception:
+            log.exception("Could not update installation contexts (enable User Install in the portal manually).")
         # user-install commands only exist on the GLOBAL sync
         await self.tree.sync()
         if self._guild_id:

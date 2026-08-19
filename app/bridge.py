@@ -225,6 +225,15 @@ class JsApi:
         webbrowser.open("https://vb-audio.com/Cable/")
         return {"ok": True}
 
+    def open_discord_link(self, kind: str) -> dict:
+        import webbrowser
+
+        link = self.discord_links.get(f"{kind}_link")
+        if not link:
+            return {"ok": False, "error": "No Discord token configured."}
+        webbrowser.open(link)
+        return {"ok": True}
+
     def get_telemetry(self) -> dict:
         return {
             "ok": True,

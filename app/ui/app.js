@@ -42,14 +42,18 @@ function renderDiscord(d) {
   const links = $("discord-links");
   links.replaceChildren();
   if (d.install_link) {
+    const open = document.createElement("button");
+    open.textContent = "Set up /say in my DMs";
+    open.title = "Adds /say to your own Discord account — it only ever sees text you type into /say";
+    open.onclick = () => pywebview.api.open_discord_link("install");
     const a = document.createElement("button");
-    a.textContent = "Copy DM install link";
-    a.title = "She opens this to add /say to her own account — then /say works inside any DM";
+    a.textContent = "Copy install link";
+    a.title = "Send this to whoever should be able to type /say in their DMs";
     a.onclick = () => copyText("install link", d.install_link);
     const b = document.createElement("button");
     b.textContent = "Copy server invite";
     b.onclick = () => copyText("server invite", d.invite_link);
-    links.append(a, " · ", b);
+    links.append(open, " · ", a, " · ", b);
   }
 }
 
