@@ -4,11 +4,12 @@ Two TTS engines feed the same RVC stage:
 - "kokoro": local kokoro-onnx on the GPU (fast, offline-capable) — default
 - "edge":   Microsoft edge-tts cloud voices (fallback; needs internet, ~1.3s RTT)
 
-ultimate_rvc / kokoro are imported lazily inside the synthesis calls: they are
-heavy imports (torch/CUDA/onnx) and this module must stay importable for tests
-and for bot startup checks even before the models exist.
+engine.rvc (vendored ultimate-rvc inference code) / kokoro are imported lazily
+inside the synthesis calls: they are heavy imports (torch/CUDA/onnx) and this
+module must stay importable for tests and for bot startup checks even before
+the models exist.
 
-We call VoiceConverter directly instead of ultimate-rvc's run_pipeline wrapper:
+We call VoiceConverter directly instead of upstream's run_pipeline wrapper:
 the wrapper builds a fresh converter per call (reloading the embedder and the
 Miku model onto the GPU every time), which costs ~15s per message. A held
 converter skips those reloads via get_vc/load_hubert's own caching guards.
@@ -29,10 +30,6 @@ KOKORO_DIR = BASE_DIR / "models" / "kokoro"
 AUDIO_DIR = BASE_DIR / "audio"
 OUTPUT_DIR = AUDIO_DIR / "output"
 MAX_TEXT_LEN = 500
-
-# ultimate-rvc resolves its model directory from this at import time, so it is
-# set here, before any lazy import of the package can happen.
-os.environ.setdefault("URVC_VOICE_MODELS_DIR", str(VOICE_MODELS_DIR))
 
 log = logging.getLogger(__name__)
 
@@ -126,8 +123,8 @@ def _get_converter():
     """
     global _converter
     if _converter is None:
-        from ultimate_rvc.rvc.infer import pipeline as rvc_infer_pipeline
-        from ultimate_rvc.rvc.infer.infer import VoiceConverter
+        from engine.rvc.infer import pipeline as rvc_infer_pipeline
+        from engine.rvc.infer.infer import VoiceConverter
 
         rvc_infer_pipeline.RMVPE = functools.cache(rvc_infer_pipeline.RMVPE)
         rvc_infer_pipeline.faiss.read_index = functools.cache(
@@ -189,9 +186,22 @@ async def _tts(text: str, out_path: Path) -> None:
         ).save(str(out_path))
 
 
-def _convert_blocking(tts_path: Path, out_path: Path) -> None:
-    from ultimate_rvc.core.generate.common import _get_rvc_files
+def _get_rvc_files(model_name: str) -> tuple[Path, Path | None]:
+    """Resolve the .pth model file and optional .index file of a voice model.
 
+    Local replacement for ultimate_rvc.core.generate.common._get_rvc_files.
+    """
+    model_dir = VOICE_MODELS_DIR / model_name
+    if not model_dir.is_dir():
+        raise FileNotFoundError(f"Voice model directory not found: {model_dir}")
+    model_file = next(iter(sorted(model_dir.glob("*.pth"))), None)
+    if model_file is None:
+        raise FileNotFoundError(f"No .pth model file found in {model_dir}")
+    index_file = next(iter(sorted(model_dir.glob("*.index"))), None)
+    return model_file, index_file
+
+
+def _convert_blocking(tts_path: Path, out_path: Path) -> None:
     model_pth, model_index = _get_rvc_files(SETTINGS["model_name"])
     _get_converter().convert_audio(
         audio_input_path=str(tts_path),

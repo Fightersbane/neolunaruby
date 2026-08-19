@@ -1,17 +1,44 @@
-# Install with the CUDA extra index so torch gets cu128 GPU wheels:
-#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
-ultimate-rvc[cuda]
+# Inference-only environment (RVC inference code is vendored under engine/rvc/,
+# so ultimate-rvc is NOT a dependency). Install with the CUDA extra index so
+# torch gets cu128 GPU wheels:
+#   py -3.13 -m venv .venv
+#   .venv\Scripts\python.exe -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+#
+# NOTE: kokoro-onnx drags in plain onnxruntime which shadows the GPU build.
+# After install run:
+#   .venv\Scripts\python.exe -m pip uninstall -y onnxruntime
+#   .venv\Scripts\python.exe -m pip install --force-reinstall --no-deps onnxruntime-gpu==1.23.2
+#
+# OPTIONAL post-install torch pruning (saves ~1.1GB; verified safe for this
+# project's inference — do NOT do this if you ever build C++ extensions or
+# use torch.linalg multi-GPU solvers in this venv):
+#   del .venv\Lib\site-packages\torch\lib\*.lib          (static import libs, build-time only)
+#   rmdir /s .venv\Lib\site-packages\torch\include       (C++ headers, build-time only)
+#   del .venv\Lib\site-packages\torch\lib\cusolverMg64_11.dll        (multi-GPU solver)
+#   del .venv\Lib\site-packages\torch\lib\nvrtc64_120_0.alt.dll      (alternate NVRTC)
+# Keep cudnn_adv (RMVPE's BiGRU + kokoro LSTMs), cufft (torch.stft), cusparse/cusolver
+# (load-time imports of torch_cuda.dll).
+
 discord.py[voice]
 python-dotenv
 kokoro-onnx
+edge-tts
 sounddevice
+soundfile
+librosa                 # audio load/resample (pulls soxr used by vendored RVC code)
+scipy                   # high-pass filter in engine/rvc/infer/pipeline.py
+faiss-cpu               # speaker-index retrieval in engine/rvc/infer/pipeline.py
+transformers==4.57.3    # HubertModel for the contentvec embedder (pin: known-good with our weights)
+requests                # app/updater.py
 pywebview
 keyboard
 pystray
 pillow
 nvidia-ml-py
-# kokoro-onnx drags in plain onnxruntime which shadows the GPU build; keep the
-# CUDA-12-matched GPU build pinned (torch cu128 ships the matching DLLs)
+
+# GPU stack — versions must stay matched (torch cu128 ships the CUDA 12 DLLs
+# that onnxruntime-gpu 1.23.2 loads via os.add_dll_directory).
+torch==2.7.1
 onnxruntime-gpu==1.23.2
 
 # dev

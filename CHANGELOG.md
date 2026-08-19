@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — 2026-08-19
+
+- Slim build: RVC inference code vendored into `engine/rvc/`, ultimate-rvc and its
+  app/training stack removed from dependencies. Environment shrinks 7.5 GB -> 5.6 GB
+  (torch's CUDA runtime is the remaining floor). Only the rmvpe pitch method ships.
+- requirements.txt is now the single, inference-only dependency file with documented
+  post-install steps.
+- MIT license, user-facing README, branch protection with required CI, PR-based flow.
+
 ## 0.2.0 — 2026-08-19
 
 - Discord integration lives in the desktop app: `/say` works inside DM conversations
