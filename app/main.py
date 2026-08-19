@@ -41,7 +41,15 @@ def main() -> None:
 
     loop = EngineLoop()
     loop.start()
-    player = playback.AudioPlayer(device=cfg["device"])
+    devices = playback.list_output_devices()
+
+    def _resolve(name):
+        return playback.device_index_by_name(name, devices) if name else None
+
+    player = playback.AudioPlayer(
+        device=_resolve(cfg["device"]),
+        monitor_device=_resolve(cfg["monitor_device"]),
+    )
     loop.submit(_start_player(player)).result(timeout=10)
 
     api = JsApi(loop, player, cfg, lambda c: config.save(CONFIG_PATH, c))

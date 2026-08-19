@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 
 DEFAULTS = {
     "hotkey": "ctrl+shift+m",
-    "device": None,  # output device index; None = system default
+    "device": None,          # output device NAME (indices shift); None = system default
+    "monitor_device": None,  # second sink to hear yourself; NAME or None = off
     "preset": "Miku",
     "speed": 1.1,
     "n_semitones": 10,

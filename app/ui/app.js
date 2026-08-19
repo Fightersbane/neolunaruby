@@ -166,13 +166,19 @@ async function init() {
   $("hotkey").value = s.hotkey;
 
   const dev = await pywebview.api.list_devices();
-  const options = [new Option("System default", "", false, s.device === null)];
+  // settings persist device NAMES; resolve to the current index for the UI
+  const devIdx = dev.devices.find((d) => d.name === s.device)?.index ?? null;
+  const monIdx = dev.devices.find((d) => d.name === s.monitor_device)?.index ?? null;
+  const options = [new Option("System default", "", false, devIdx === null)];
+  const monOptions = [new Option("Off", "", false, monIdx === null)];
   for (const d of dev.devices) {
     const label = (d.index === dev.cable ? "🎤 " : "") + d.name + (d.is_default ? " (default)" : "");
-    options.push(new Option(label, d.index, false, d.index === s.device));
+    options.push(new Option(label, d.index, false, d.index === devIdx));
+    monOptions.push(new Option(label, d.index, false, d.index === monIdx));
   }
   $("device").replaceChildren(...options);
-  renderCableHint(dev, s.device);
+  $("monitor").replaceChildren(...monOptions);
+  renderCableHint(dev, devIdx);
 
   renderHistory((await pywebview.api.get_history()).items);
   refreshTelemetry();
@@ -191,6 +197,7 @@ $("speed").onchange = (e) => setSetting("speed", Number(e.target.value));
 $("pitch").oninput = (e) => { const v = Number(e.target.value); $("pitch-val").textContent = (v >= 0 ? "+" : "") + v; };
 $("pitch").onchange = (e) => setSetting("n_semitones", Number(e.target.value));
 $("device").onchange = (e) => setSetting("device", e.target.value === "" ? null : Number(e.target.value));
+$("monitor").onchange = (e) => setSetting("monitor_device", e.target.value === "" ? null : Number(e.target.value));
 $("test-tone").onclick = () => pywebview.api.test_tone();
 
 // ---------- hotkey recorder ----------

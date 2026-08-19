@@ -47,6 +47,49 @@ class TestFindVirtualCable:
         assert playback.find_virtual_cable(devs) is None
 
 
+class TestDeviceIndexByName:
+    def test_finds_index(self):
+        devs = playback._normalize_devices(RAW, default_index=1)
+        assert playback.device_index_by_name("Speakers (Realtek)", devs) == 1
+
+    def test_missing_returns_none(self):
+        devs = playback._normalize_devices(RAW, default_index=1)
+        assert playback.device_index_by_name("Gone (Unplugged)", devs) is None
+
+
+class TestMonitorPlayback:
+    def _wav(self, tmp_path):
+        import numpy as np
+        import soundfile as sf
+
+        wav = tmp_path / "x.wav"
+        sf.write(str(wav), np.zeros(100, dtype="float32"), 48000)
+        return wav
+
+    def test_monitor_plays_on_both_devices(self, monkeypatch, tmp_path):
+        played = []
+        player = playback.AudioPlayer(device=5)
+        player.monitor_device = 7
+        monkeypatch.setattr(player, "_play_to", lambda dev, data, sr: played.append(dev))
+        player._play_blocking(self._wav(tmp_path))
+        assert sorted(played) == [5, 7]
+
+    def test_without_monitor_plays_once(self, monkeypatch, tmp_path):
+        played = []
+        player = playback.AudioPlayer(device=5)
+        monkeypatch.setattr(player, "_play_to", lambda dev, data, sr: played.append(dev))
+        player._play_blocking(self._wav(tmp_path))
+        assert played == [5]
+
+    def test_monitor_same_as_primary_not_duplicated(self, monkeypatch, tmp_path):
+        played = []
+        player = playback.AudioPlayer(device=5)
+        player.monitor_device = 5
+        monkeypatch.setattr(player, "_play_to", lambda dev, data, sr: played.append(dev))
+        player._play_blocking(self._wav(tmp_path))
+        assert played == [5]
+
+
 class TestAudioPlayer:
     def _player_with_recorder(self, monkeypatch, played, delay=0.0):
         player = playback.AudioPlayer(device=None)

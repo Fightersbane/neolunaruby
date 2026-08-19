@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import threading
 
 log = logging.getLogger(__name__)
 
@@ -19,6 +20,15 @@ def _normalize_devices(raw: list[dict], default_index: int) -> list[dict]:
         {"index": d["index"], "name": d["name"], "is_default": d["index"] == default_index}
         for d in chosen
     ]
+
+
+def device_index_by_name(name: str, devices: list[dict]) -> int | None:
+    """Device indices shift whenever hardware/drivers change — persistence
+    must go through names."""
+    for d in devices:
+        if d["name"] == name:
+            return d["index"]
+    return None
 
 
 def find_virtual_cable(devices: list[dict]) -> int | None:
@@ -60,8 +70,11 @@ def test_tone(device: int | None = None) -> None:
 class AudioPlayer:
     """Plays wavs sequentially to one output device. One consumer task."""
 
-    def __init__(self, device: int | None = None) -> None:
+    def __init__(self, device: int | None = None, monitor_device: int | None = None) -> None:
         self.device = device
+        # second sink so the speaker can hear their own Miku while the primary
+        # sink is a virtual mic; None = off
+        self.monitor_device = monitor_device
         self._queue: asyncio.Queue = asyncio.Queue()
         self._task: asyncio.Task | None = None
 
@@ -99,9 +112,26 @@ class AudioPlayer:
                 self._queue.task_done()
 
     def _play_blocking(self, wav_path) -> None:
-        import sounddevice as sd
         import soundfile as sf
 
         data, sr = sf.read(str(wav_path), dtype="float32")
-        sd.play(data, sr, device=self.device)
-        sd.wait()
+        monitor = None
+        if self.monitor_device is not None and self.monitor_device != self.device:
+            monitor = threading.Thread(
+                target=self._play_to, args=(self.monitor_device, data, sr), daemon=True
+            )
+            monitor.start()
+        self._play_to(self.device, data, sr)
+        if monitor:
+            monitor.join()
+
+    @staticmethod
+    def _play_to(device, data, sr) -> None:
+        import sounddevice as sd
+
+        if data.ndim == 1:
+            data = data.reshape(-1, 1)
+        with sd.OutputStream(
+            samplerate=sr, device=device, channels=data.shape[1], dtype="float32"
+        ) as stream:
+            stream.write(data)

@@ -90,7 +90,13 @@ class JsApi:
         elif key == "n_semitones":
             pipeline.SETTINGS["n_semitones"] = int(value)
         elif key == "device":
-            self._player.device = None if value is None else int(value)
+            idx = None if value is None else int(value)
+            self._player.device = idx
+            value = self._device_name(idx)  # persist by name; indices shift
+        elif key == "monitor_device":
+            idx = None if value is None else int(value)
+            self._player.monitor_device = idx
+            value = self._device_name(idx)
         elif key == "hotkey":
             if not self._rebind_hotkey(str(value)):
                 return {"ok": False, "error": f"Could not bind {value!r} — try a form like ctrl+shift+m."}
@@ -99,6 +105,15 @@ class JsApi:
         self._cfg[key] = value
         self._save(self._cfg)
         return {"ok": True}
+
+    @staticmethod
+    def _device_name(idx: int | None) -> str | None:
+        if idx is None:
+            return None
+        for d in playback.list_output_devices():
+            if d["index"] == idx:
+                return d["name"]
+        return None
 
     def list_devices(self) -> dict:
         devices = playback.list_output_devices()
@@ -131,12 +146,9 @@ class JsApi:
 
                 self.push({"type": "cable", "status": "downloading"})
                 cable_install.download_and_install()
-                self.push({"type": "cable", "status": "rescanning"})
-                cable_install.rescan_devices()
-                devices = playback.list_output_devices()
-                cable = playback.find_virtual_cable(devices)
-                status = "done" if cable is not None else "restart_needed"
-                self.push({"type": "cable", "status": status, "cable": cable})
+                # No in-process rescan: re-initializing PortAudio while the
+                # player exists corrupts its state. A restart picks it up.
+                self.push({"type": "cable", "status": "restart_needed"})
             except Exception as exc:
                 log.exception("VB-Cable install failed")
                 self.push({"type": "cable", "status": "failed", "error": str(exc)})
