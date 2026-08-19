@@ -17,6 +17,23 @@ window.onEvent = (evt) => {
     cableStatus(evt);
   } else if (evt.type === "discord") {
     $("discord-status").textContent = evt.status;
+  } else if (evt.type === "setup") {
+    if (evt.asset) {
+      const row = document.querySelector(`#wizard-assets [data-asset="${CSS.escape(evt.asset)}"]`);
+      if (row) {
+        row.textContent = evt.pct >= 100 ? "done" : `${evt.pct}%`;
+        row.classList.toggle("done", evt.pct >= 100);
+      }
+    } else if (evt.status === "complete") {
+      $("wizard-close").disabled = false;
+      $("wizard-download").textContent = "All models ready";
+      $("wizard-download").disabled = true;
+      toast("Setup complete — Miku is downloading into memory on first use.");
+    } else if (evt.status === "failed") {
+      $("wizard-download").disabled = false;
+      $("wizard-download").textContent = "Retry download";
+      toast(`Download failed: ${evt.error || "network error"}`);
+    }
   } else if (evt.type === "update") {
     if (evt.status === "available" && !$("chip-version").classList.contains("update-available")) {
       $("chip-version").classList.add("update-available");
@@ -233,7 +250,48 @@ async function init() {
   setInterval(refreshTelemetry, 2000);
 }
 
-window.addEventListener("pywebviewready", init);
+async function maybeShowWizard() {
+  const setup = await pywebview.api.get_setup_state();
+  if (!setup.ok || (!setup.missing.length && setup.token_configured)) return;
+  if (!setup.missing.length) return; // token alone doesn't force the wizard
+  const list = $("wizard-assets");
+  list.replaceChildren();
+  for (const name of setup.missing) {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = name;
+    const pct = document.createElement("span");
+    pct.className = "pct";
+    pct.dataset.asset = name;
+    pct.textContent = "waiting";
+    li.append(label, pct);
+    list.append(li);
+  }
+  $("wizard-token-field").hidden = setup.token_configured;
+  $("wizard").hidden = false;
+}
+
+$("wizard-download").onclick = () => {
+  $("wizard-download").disabled = true;
+  $("wizard-download").textContent = "Downloading…";
+  pywebview.api.run_setup();
+};
+
+$("wizard-token-save").onclick = async () => {
+  const res = await pywebview.api.save_token($("wizard-token").value);
+  if (res.ok) toast("Token saved — Discord connects on next launch.");
+  else toast(res.error);
+};
+
+$("wizard-close").onclick = () => {
+  $("wizard").hidden = true;
+  init();
+};
+
+window.addEventListener("pywebviewready", () => {
+  init();
+  maybeShowWizard();
+});
 
 // ---------- wiring ----------
 $("chip-version").onclick = async () => {

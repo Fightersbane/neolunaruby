@@ -192,6 +192,57 @@ class JsApi:
         threading.Thread(target=run, daemon=True).start()
         return {"ok": True}
 
+    def get_setup_state(self) -> dict:
+        import os
+
+        from app import setup_wizard
+
+        return {
+            "ok": True,
+            "missing": setup_wizard.missing_assets(),
+            "token_configured": bool(os.getenv("DISCORD_TOKEN")),
+        }
+
+    def run_setup(self) -> dict:
+        def run():
+            from app import setup_wizard
+
+            last = {}
+
+            def cb(name, done, total):
+                pct = int(done * 100 / total) if total else 100
+                if last.get(name) == pct:
+                    return
+                last[name] = pct
+                self.push({"type": "setup", "asset": name, "pct": pct})
+
+            try:
+                setup_wizard.download_assets(cb)
+                self.push({"type": "setup", "status": "complete"})
+            except Exception as exc:
+                log.exception("setup download failed")
+                self.push({"type": "setup", "status": "failed", "error": str(exc)})
+
+        threading.Thread(target=run, daemon=True).start()
+        return {"ok": True}
+
+    def save_token(self, token: str) -> dict:
+        from pathlib import Path
+
+        token = token.strip()
+        if token.count(".") != 2 or len(token) < 50:
+            return {"ok": False, "error": "That doesn't look like a bot token — Developer Portal → Bot → Reset Token."}
+        env_path = Path(__file__).resolve().parents[1] / ".env"
+        lines = []
+        if env_path.is_file():
+            lines = [
+                l for l in env_path.read_text(encoding="utf-8").splitlines()
+                if not l.startswith("DISCORD_TOKEN=")
+            ]
+        lines.append(f"DISCORD_TOKEN={token}")
+        env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return {"ok": True, "restart_needed": True}
+
     def check_update(self) -> dict:
         from app import updater
 

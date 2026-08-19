@@ -1,6 +1,6 @@
-# neolunamiku
+# neolunaruby
 
-![CI](https://github.com/Fightersbane/neolunamiku/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Fightersbane/neolunaruby/actions/workflows/ci.yml/badge.svg)
 
 Type a message and hear it spoken in a Hatsune Miku voice - in a Discord call, a game, or any program that takes microphone input. An accessibility tool for taking part in voice calls by typing.
 
@@ -13,7 +13,11 @@ Everything runs on your own GPU. Text goes through [kokoro-onnx](https://github.
 - **Discord, three ways**: a server bot (`/say`, `/join`, `/leave`, `/voice`, `/pitch`, `/speed`), plain DMs to the bot, and `/say` inside your own DM conversations after a one-click user install. All Discord input is limited to an allowlist of user IDs, with an optional visible transcript in the chat.
 - **Self-update**: the version chip checks this repo and installs updates only after you confirm.
 
-## Setup (Windows)
+## Install (Windows)
+
+Download the latest `neolunaruby-setup-*.exe` from [Releases](https://github.com/Fightersbane/neolunaruby/releases) and run it. The first launch installs Python, FFmpeg and the dependencies, then a setup window downloads the voice models (about 1.3 GB) with progress and offers the optional Discord step. You need an NVIDIA GPU and about 7 GB of free space.
+
+## Setup from source
 
 Requires Python 3.13, an NVIDIA GPU, and [FFmpeg](https://ffmpeg.org) (`winget install Gyan.FFmpeg`).
 

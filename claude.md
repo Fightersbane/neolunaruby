@@ -1,4 +1,4 @@
-# neolunamiku
+# neolunaruby
 
 Accessibility tool: the user types, a Hatsune Miku voice speaks into a virtual
 microphone or a Discord voice channel. Strictly private, non-commercial use -

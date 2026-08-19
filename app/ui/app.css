@@ -224,6 +224,37 @@ input[type="range"] { width: 100%; accent-color: var(--teal); }
   cursor: pointer;
 }
 
+.wizard {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 14, 15, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.wizard[hidden] { display: none; }
+.wizard-card {
+  background: var(--panel);
+  border: 1px solid var(--teal-dim);
+  border-radius: 10px;
+  padding: 20px;
+  width: min(440px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+#wizard-assets { list-style: none; }
+#wizard-assets li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--panel-2);
+}
+#wizard-assets .pct { font-family: var(--mono); color: var(--muted); }
+#wizard-assets .pct.done { color: var(--teal); }
+
 .toast {
   position: fixed;
   bottom: 14px;

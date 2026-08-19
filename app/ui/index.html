@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>neolunamiku</title>
+<title>neolunaruby</title>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
 <header>
   <div class="led" id="led"></div>
-  <div class="wordmark"><span>CV01</span> <b>NEOLUNAMIKU</b></div>
+  <div class="wordmark"><span>CV01</span> <b>NEOLUNARUBY</b></div>
   <div class="chips">
     <div class="chip" id="chip-latency" title="last message: TTS + voice conversion">— ms</div>
     <div class="chip" id="chip-gpu">GPU —</div>
@@ -96,6 +96,23 @@
     </label>
   </div>
 </section>
+
+<div class="wizard" id="wizard" hidden>
+  <div class="wizard-card">
+    <div class="wordmark" style="margin-bottom:10px"><span>CV01</span> <b>FIRST-RUN SETUP</b></div>
+    <p class="hint" style="margin-bottom:12px">Miku needs her voice models (about 1.3 GB, one time, from their official sources).</p>
+    <ul id="wizard-assets"></ul>
+    <button id="wizard-download" style="width:100%;margin-top:10px;padding:10px 0">Download everything</button>
+    <div class="field" id="wizard-token-field" style="margin-top:14px">
+      <label for="wizard-token">Discord bot token (optional — enables /say in DMs and server voice)</label>
+      <div class="row">
+        <input type="text" id="wizard-token" placeholder="paste token, or leave empty">
+        <button class="quiet" id="wizard-token-save">Save</button>
+      </div>
+    </div>
+    <button class="quiet" id="wizard-close" style="width:100%;margin-top:12px" disabled>Start talking</button>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 

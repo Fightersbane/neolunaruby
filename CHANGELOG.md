@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0 — 2026-08-19
+
+- Renamed to neolunaruby. Voice presets are still named Miku.
+- Windows installer (`neolunaruby-setup-<version>.exe`, about 2 MB): installs per-user,
+  then the first launch installs Python, FFmpeg and dependencies by itself.
+- First-run wizard downloads the voice models with per-file progress and takes an
+  optional Discord bot token, so no terminal or manual file placement is needed.
+- Updates work for installed copies too: a zip overlay replaces code only and never
+  touches models, settings or the environment. Applying still needs your confirmation.
+
 ## 0.3.0 — 2026-08-19
 
 - Slim build: RVC inference code vendored into `engine/rvc/`, ultimate-rvc and its

@@ -25,6 +25,17 @@ the onnxruntime post-install step, and optional torch pruning.
 .venv\Scripts\python.exe -m engine --device cable        # headless mic mode
 ```
 
+## Building the installer
+
+```powershell
+winget install JRSoftware.InnoSetup          # one time
+powershell -ExecutionPolicy Bypass -File scripts\build_installer.ps1
+```
+
+Output lands in `dist\neolunaruby-setup-<VERSION>.exe`. It ships source and
+assets only - `installer\bootstrap.ps1` creates the environment on the user's
+machine and `app/setup_wizard.py` downloads the models on first launch.
+
 ## Workflow
 
 `main` is branch-protected: feature branch -> commit -> push -> PR -> CI green ->
