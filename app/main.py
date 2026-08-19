@@ -228,6 +228,20 @@ def main() -> None:
 
     threading.Thread(target=warm, daemon=True).start()
 
+    def check_updates_bg():
+        """Notify-only: an available update highlights the version chip; applying
+        always requires the user's explicit confirmation."""
+        try:
+            from app import updater
+
+            info = updater.check()
+            if info["behind"] > 0:
+                api.push({"type": "update", "status": "available", "behind": info["behind"]})
+        except Exception:
+            log.debug("startup update check failed", exc_info=True)
+
+    threading.Thread(target=check_updates_bg, daemon=True).start()
+
     try:
         webview.start()
     finally:

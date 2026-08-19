@@ -18,7 +18,11 @@ window.onEvent = (evt) => {
   } else if (evt.type === "discord") {
     $("discord-status").textContent = evt.status;
   } else if (evt.type === "update") {
-    if (evt.status === "updating") toast("Updating — this can take a minute…");
+    if (evt.status === "available" && !$("chip-version").classList.contains("update-available")) {
+      $("chip-version").classList.add("update-available");
+      $("chip-version").textContent += " ⬆";
+      toast(`Update available (${evt.behind} change${evt.behind > 1 ? "s" : ""}) — click the version chip to install.`);
+    } else if (evt.status === "updating") toast("Updating — this can take a minute…");
     else if (evt.status === "restarting") toast("Updated. Restarting…");
     else if (evt.status === "failed") toast(`Update failed: ${evt.error || "unknown error"}`);
   }
