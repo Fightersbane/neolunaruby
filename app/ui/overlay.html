@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>miku-overlay</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: #0e1416;
+    border: 1px solid #39c5bb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 100vh;
+    padding: 0 14px;
+    font: 15px "Segoe UI", system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #39c5bb; flex: none; box-shadow: 0 0 6px #39c5bb; }
+  input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #d9e6e4;
+    font: 16px "Segoe UI", system-ui, sans-serif;
+  }
+  input:focus { outline: none; }
+  input::placeholder { color: #74898c; }
+</style>
+</head>
+<body>
+<div class="dot"></div>
+<input id="overlay-input" placeholder="Say something…" autofocus>
+<script>
+  "use strict";
+  const input = document.getElementById("overlay-input");
+  window.onEvent = () => {};  // pushes also reach this window; nothing to render
+
+  function focusInput() {
+    input.focus();
+    input.select();
+  }
+  window.focusInput = focusInput;
+
+  input.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter") {
+      const text = input.value.trim();
+      if (!text) return;
+      const res = await pywebview.api.say(text);
+      if (res.ok) {
+        input.value = "";
+        pywebview.api.hide_overlay();
+      }
+    } else if (e.key === "Escape") {
+      input.value = "";
+      pywebview.api.hide_overlay();
+    }
+  });
+</script>
+</body>
+</html>

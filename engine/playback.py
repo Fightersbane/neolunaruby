@@ -29,6 +29,17 @@ def list_output_devices() -> list[dict]:
     return _normalize_devices(raw, default_out)
 
 
+def test_tone(device: int | None = None) -> None:
+    import numpy as np
+    import sounddevice as sd
+
+    sr = 48000
+    t = np.linspace(0, 0.4, int(sr * 0.4), endpoint=False)
+    tone = (0.2 * np.sin(2 * np.pi * 440 * t)).astype("float32")
+    sd.play(tone, sr, device=device)
+    sd.wait()
+
+
 class AudioPlayer:
     """Plays wavs sequentially to one output device. One consumer task."""
 
