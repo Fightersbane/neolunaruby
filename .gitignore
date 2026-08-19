@@ -6,4 +6,6 @@ output/
 audio/
 config.json
 logs/
+dist/
+staging/
 *.wav
