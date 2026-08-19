@@ -65,6 +65,9 @@ _gpu_lock = asyncio.Lock()
 _converter = None
 _kokoro = None
 
+# Timing split of the most recent synthesize() call, for the app's telemetry.
+LAST_TIMING: dict = {}
+
 
 def validate_text(text: str) -> str | None:
     """Return an error message for unusable input, or None if it is speakable."""
@@ -211,11 +214,19 @@ async def synthesize(text: str) -> Path:
         stem = uuid.uuid4().hex
         tts_path = OUTPUT_DIR / f"tts_{stem}.wav"
         out_path = OUTPUT_DIR / f"miku_{stem}.wav"
+        t0 = time.monotonic()
         await _tts(text, tts_path)
+        t1 = time.monotonic()
         try:
             await asyncio.to_thread(_convert_blocking, tts_path, out_path)
         finally:
             tts_path.unlink(missing_ok=True)
+        t2 = time.monotonic()
+        LAST_TIMING.update(
+            tts_ms=round((t1 - t0) * 1000),
+            rvc_ms=round((t2 - t1) * 1000),
+            total_ms=round((t2 - t0) * 1000),
+        )
         return out_path
 
 
