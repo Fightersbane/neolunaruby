@@ -26,6 +26,9 @@ class JsApi:
         self.history = History()
         self._windows: list = []  # main.py appends webview windows
         self.state = "starting"  # starting | ready | error
+        self.discord_client = None  # set by main.py when a token is configured
+        self.discord_status = "no token configured"
+        self.discord_links: dict = {}
 
     # ---- pushes -------------------------------------------------------
     def push(self, evt: dict) -> None:
@@ -54,17 +57,26 @@ class JsApi:
         pass
 
     # ---- called from JS ------------------------------------------------
+    async def _speak_job(self, text: str, origin: str = "app") -> None:
+        """Synthesize and route to the active sink. Runs on the engine loop;
+        also the entry point for Discord-originated speech."""
+        err = pipeline.validate_text(text)
+        if err:
+            raise ValueError(err)
+        wav = await pipeline.synthesize(text)
+        entry = self.history.add(text, wav, dict(pipeline.LAST_TIMING), origin=origin)
+        routed_to_voice = False
+        if self._cfg["mode"] == "bot" and self.discord_client is not None:
+            routed_to_voice = await self.discord_client.play_voice(wav)
+        if not routed_to_voice:
+            await self._player.enqueue(wav)
+        self.push({"type": "speaking", "entry": entry})
+        self.push({"type": "history", "items": self.history.items()})
+
     def say(self, text: str) -> dict:
         err = pipeline.validate_text(text)
         if err:
             return {"ok": False, "error": err}
-
-        async def job():
-            wav = await pipeline.synthesize(text)
-            entry = self.history.add(text, wav, dict(pipeline.LAST_TIMING))
-            await self._player.enqueue(wav)
-            self.push({"type": "speaking", "entry": entry})
-            self.push({"type": "history", "items": self.history.items()})
 
         def done(fut):
             exc = fut.exception()
@@ -72,8 +84,12 @@ class JsApi:
                 log.error("say failed", exc_info=exc)
                 self.set_state("error", str(exc))
 
-        self._loop.submit(job()).add_done_callback(done)
+        self._loop.submit(self._speak_job(text)).add_done_callback(done)
         return {"ok": True}
+
+    def set_discord_status(self, status: str) -> None:
+        self.discord_status = status
+        self.push({"type": "discord", "status": status})
 
     def get_state(self) -> dict:
         return {
@@ -82,6 +98,7 @@ class JsApi:
             "settings": dict(self._cfg),
             "presets": list(pipeline.VOICE_PRESETS),
             "last_timing": dict(pipeline.LAST_TIMING),
+            "discord": {"status": self.discord_status, **self.discord_links},
         }
 
     def set_setting(self, key: str, value) -> dict:
@@ -105,6 +122,11 @@ class JsApi:
         elif key == "hotkey":
             if not self._rebind_hotkey(str(value)):
                 return {"ok": False, "error": f"Could not bind {value!r} — try a form like ctrl+shift+m."}
+        elif key == "mode":
+            if value not in ("mic", "bot"):
+                return {"ok": False, "error": f"Unknown mode {value!r}."}
+        elif key == "allowed_dm_users":
+            value = parse_id_list(str(value))
         else:
             return {"ok": False, "error": f"Unknown setting {key!r}."}
         self._cfg[key] = value

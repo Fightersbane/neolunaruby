@@ -13,7 +13,8 @@ DEFAULTS = {
     "preset": "Miku",
     "speed": 1.1,
     "n_semitones": 10,
-    "mode": "mic",
+    "mode": "mic",              # mic = virtual-mic sink, bot = server voice channel
+    "allowed_dm_users": [],     # Discord user IDs allowed to speak via DM / user-app /say
 }
 
 
