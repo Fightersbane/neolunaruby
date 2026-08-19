@@ -125,6 +125,46 @@ class MikuClient(discord.Client):
                 await state.channel.connect()
             await interaction.response.send_message(f"Joined {state.channel.name}.", ephemeral=True)
 
+        @self.tree.command(description="Tune Miku's pitch (RVC transpose in semitones)")
+        @app_commands.guild_only()
+        @app_commands.describe(semitones="Semitones up (+) or down (-)")
+        async def pitch(interaction: discord.Interaction, semitones: app_commands.Range[int, -12, 12]) -> None:
+            from engine import pipeline
+
+            pipeline.SETTINGS["n_semitones"] = semitones
+            await interaction.response.send_message(f"Pitch transpose set to {semitones:+d} semitones.", ephemeral=True)
+
+        @self.tree.command(description="Set Miku's speaking speed")
+        @app_commands.guild_only()
+        @app_commands.describe(multiplier="1.0 = natural, up to 2.0")
+        async def speed(interaction: discord.Interaction, multiplier: app_commands.Range[float, 0.5, 2.0]) -> None:
+            from engine import pipeline
+
+            pipeline.SETTINGS["speed"] = multiplier
+            await interaction.response.send_message(f"Speed set to {multiplier}x.", ephemeral=True)
+
+        @self.tree.command(description="Switch the base TTS voice fed into the Miku model")
+        @app_commands.guild_only()
+        async def voice(interaction: discord.Interaction, name: str) -> None:
+            from engine import pipeline
+
+            if name not in pipeline.VOICE_PRESETS:
+                options = ", ".join(pipeline.VOICE_PRESETS)
+                await interaction.response.send_message(f"Unknown voice. Options: {options}", ephemeral=True)
+                return
+            pipeline.apply_voice_preset(name)
+            await interaction.response.send_message(f"Base voice set to {name}.", ephemeral=True)
+
+        @voice.autocomplete("name")
+        async def voice_autocomplete(interaction: discord.Interaction, current: str):
+            from engine import pipeline
+
+            return [
+                app_commands.Choice(name=p, value=p)
+                for p in pipeline.VOICE_PRESETS
+                if current.lower() in p.lower()
+            ]
+
         @self.tree.command(description="Disconnect Miku from voice")
         @app_commands.guild_only()
         async def leave(interaction: discord.Interaction) -> None:

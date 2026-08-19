@@ -1,10 +1,13 @@
 """neolunamiku desktop app entry point: window + overlay + hotkey + tray."""
 
+import base64
 import logging
+import os
 import threading
 from pathlib import Path
 
 import webview
+from dotenv import load_dotenv
 
 from engine import pipeline, playback
 
@@ -32,7 +35,17 @@ def _tray_icon_image():
     return img
 
 
+def _app_id_from_token(token: str) -> str | None:
+    """The token's first dot-segment is the base64-encoded application id."""
+    try:
+        first = token.split(".")[0]
+        return base64.b64decode(first + "=" * (-len(first) % 4)).decode()
+    except Exception:
+        return None
+
+
 def main() -> None:
+    load_dotenv()
     cfg = config.load(CONFIG_PATH)
     pipeline.apply_voice_preset(cfg["preset"])
     pipeline.SETTINGS["speed"] = cfg["speed"]
@@ -56,6 +69,34 @@ def main() -> None:
     player.on_error = lambda msg: api.push(
         {"type": "state", "state": api.state, "error": f"Playback failed: {msg}"}
     )
+
+    # ---- discord client (optional: needs DISCORD_TOKEN in .env) -----------
+    discord_client = None
+    token = os.getenv("DISCORD_TOKEN")
+    if token:
+        from engine.discord_client import MikuClient
+
+        discord_client = MikuClient(
+            on_speak=api._speak_job,
+            allowed_ids=lambda: {int(x) for x in cfg["allowed_dm_users"]},
+            guild_id=os.getenv("GUILD_ID"),
+            on_status=api.set_discord_status,
+        )
+        api.discord_client = discord_client
+        app_id = _app_id_from_token(token)
+        if app_id:
+            api.discord_links = {
+                "install_link": (
+                    f"https://discord.com/oauth2/authorize?client_id={app_id}"
+                    "&integration_type=1&scope=applications.commands"
+                ),
+                "invite_link": (
+                    f"https://discord.com/oauth2/authorize?client_id={app_id}"
+                    "&scope=bot+applications.commands&permissions=3146752"
+                ),
+            }
+        api.discord_status = "connecting…"
+        loop.submit(discord_client.start(token))
 
     window = webview.create_window(
         "neolunamiku",
@@ -182,6 +223,11 @@ def main() -> None:
     finally:
         tray.stop()
         keyboard.unhook_all()
+        if discord_client is not None:
+            try:
+                loop.submit(discord_client.close()).result(timeout=10)
+            except Exception:
+                log.exception("discord client close failed")
         loop.stop()
 
 

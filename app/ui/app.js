@@ -15,8 +15,39 @@ window.onEvent = (evt) => {
     renderHistory(evt.items);
   } else if (evt.type === "cable") {
     cableStatus(evt);
+  } else if (evt.type === "discord") {
+    $("discord-status").textContent = evt.status;
   }
 };
+
+function setModeUI(mode) {
+  document.querySelectorAll(".seg button").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+}
+
+async function copyText(label, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(`${label} copied.`);
+  } catch {
+    prompt(`Copy the ${label}:`, text);
+  }
+}
+
+function renderDiscord(d) {
+  $("discord-status").textContent = d.status;
+  const links = $("discord-links");
+  links.replaceChildren();
+  if (d.install_link) {
+    const a = document.createElement("button");
+    a.textContent = "Copy DM install link";
+    a.title = "She opens this to add /say to her own account — then /say works inside any DM";
+    a.onclick = () => copyText("install link", d.install_link);
+    const b = document.createElement("button");
+    b.textContent = "Copy server invite";
+    b.onclick = () => copyText("server invite", d.invite_link);
+    links.append(a, " · ", b);
+  }
+}
 
 function cableStatus(evt) {
   const hint = $("cable-hint");
@@ -164,6 +195,9 @@ async function init() {
   $("pitch").value = s.n_semitones;
   $("pitch-val").textContent = (s.n_semitones >= 0 ? "+" : "") + s.n_semitones;
   $("hotkey").value = s.hotkey;
+  setModeUI(s.mode);
+  $("allowed-ids").value = (s.allowed_dm_users || []).join(", ");
+  renderDiscord(state.discord || { status: "no token configured" });
 
   const dev = await pywebview.api.list_devices();
   // settings persist device NAMES; resolve to the current index for the UI
@@ -199,6 +233,20 @@ $("pitch").onchange = (e) => setSetting("n_semitones", Number(e.target.value));
 $("device").onchange = (e) => setSetting("device", e.target.value === "" ? null : Number(e.target.value));
 $("monitor").onchange = (e) => setSetting("monitor_device", e.target.value === "" ? null : Number(e.target.value));
 $("test-tone").onclick = () => pywebview.api.test_tone();
+
+document.querySelectorAll(".seg button").forEach((btn) => {
+  btn.onclick = async () => {
+    if (await setSetting("mode", btn.dataset.mode)) setModeUI(btn.dataset.mode);
+  };
+});
+
+$("allowed-save").onclick = async () => {
+  if (await setSetting("allowed_dm_users", $("allowed-ids").value)) {
+    const state = await pywebview.api.get_state();
+    $("allowed-ids").value = (state.settings.allowed_dm_users || []).join(", ");
+    toast("Allowlist saved.");
+  }
+};
 
 // ---------- hotkey recorder ----------
 const KEYMAP = {

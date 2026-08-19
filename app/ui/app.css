@@ -179,6 +179,10 @@ input[type="range"] { width: 100%; accent-color: var(--teal); }
 }
 .empty { color: var(--muted); padding: 18px 4px; font-size: 13px; }
 
+.seg { display: flex; gap: 6px; }
+.seg button { flex: 1; background: var(--panel); border: 1px solid var(--line); color: var(--muted); padding: 8px 0; }
+.seg button.active { border-color: var(--teal); color: var(--text); background: var(--teal-dim); }
+
 #hotkey { cursor: default; }
 #hotkey.recording { border-color: var(--pink); color: var(--pink); }
 

@@ -31,6 +31,13 @@
 
 <section class="panel active" id="panel-voice">
   <div class="field">
+    <label>Output mode</label>
+    <div class="seg">
+      <button data-mode="mic" id="mode-mic">🎤 Virtual mic</button>
+      <button data-mode="bot" id="mode-bot">🤖 Server voice</button>
+    </div>
+  </div>
+  <div class="field">
     <label for="preset">Voice</label>
     <select id="preset"></select>
   </div>
@@ -60,6 +67,15 @@
       <input type="text" id="hotkey" readonly>
       <button class="quiet" id="hotkey-record">Record</button>
     </div>
+  </div>
+  <div class="field">
+    <label for="allowed-ids">Discord</label>
+    <div class="hint" id="discord-status">—</div>
+    <div class="row" style="margin-top:6px">
+      <input type="text" id="allowed-ids" placeholder="Allowed Discord user IDs, comma-separated">
+      <button class="quiet" id="allowed-save">Save</button>
+    </div>
+    <div class="hint" id="discord-links"></div>
   </div>
 </section>
 
