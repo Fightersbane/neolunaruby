@@ -13,8 +13,31 @@ window.onEvent = (evt) => {
     pulseVoiceline();
   } else if (evt.type === "history") {
     renderHistory(evt.items);
+  } else if (evt.type === "cable") {
+    cableStatus(evt);
   }
 };
+
+function cableStatus(evt) {
+  const hint = $("cable-hint");
+  if (evt.status === "downloading") {
+    hint.textContent = "Downloading VB-Cable…";
+  } else if (evt.status === "rescanning") {
+    hint.textContent = "Installing — accept the Windows admin prompt if it appears…";
+  } else if (evt.status === "done") {
+    toast("Virtual mic installed.");
+    init();
+  } else if (evt.status === "restart_needed") {
+    hint.textContent = "Installed — restart the app (or PC) to see the virtual mic.";
+  } else if (evt.status === "failed") {
+    hint.replaceChildren("Install failed — ");
+    const b = document.createElement("button");
+    b.textContent = "open the download page";
+    b.onclick = () => pywebview.api.open_cable_page();
+    hint.append(b);
+    toast(evt.error || "VB-Cable install failed.");
+  }
+}
 
 function setLed(state) {
   $("led").className = "led" + (state === "ready" ? " ready" : state === "error" ? " error" : "");
@@ -108,9 +131,12 @@ function renderCableHint(dev, currentDevice) {
   if (dev.cable === null) {
     hint.append("No virtual mic found — ");
     const btn = document.createElement("button");
-    btn.textContent = "get VB-Cable";
-    btn.onclick = () => pywebview.api.open_cable_page();
-    hint.append(btn, " (free driver), then restart the app.");
+    btn.textContent = "Install VB-Cable";
+    btn.onclick = () => {
+      hint.textContent = "Starting download…";
+      pywebview.api.install_cable();
+    };
+    hint.append(btn, " (free driver, one Windows admin prompt)");
   } else if (currentDevice !== dev.cable) {
     const btn = document.createElement("button");
     btn.textContent = "🎤 Use virtual mic";
@@ -166,9 +192,54 @@ $("pitch").oninput = (e) => { const v = Number(e.target.value); $("pitch-val").t
 $("pitch").onchange = (e) => setSetting("n_semitones", Number(e.target.value));
 $("device").onchange = (e) => setSetting("device", e.target.value === "" ? null : Number(e.target.value));
 $("test-tone").onclick = () => pywebview.api.test_tone();
-$("hotkey-apply").onclick = async () => {
-  if (await setSetting("hotkey", $("hotkey").value.trim())) toast("Hotkey updated.");
+
+// ---------- hotkey recorder ----------
+const KEYMAP = {
+  " ": "space", "ArrowUp": "up", "ArrowDown": "down", "ArrowLeft": "left",
+  "ArrowRight": "right", "Enter": "enter", "Tab": "tab", "Backspace": "backspace",
+  "Delete": "delete", "Home": "home", "End": "end", "PageUp": "page up",
+  "PageDown": "page down", "Insert": "insert",
 };
+let recordingHotkey = false;
+
+$("hotkey-record").onclick = () => {
+  recordingHotkey = true;
+  $("hotkey").value = "press keys…";
+  $("hotkey").classList.add("recording");
+};
+
+async function stopHotkeyRecording(combo) {
+  recordingHotkey = false;
+  $("hotkey").classList.remove("recording");
+  if (combo && (await setSetting("hotkey", combo))) {
+    $("hotkey").value = combo;
+    toast(`Hotkey set to ${combo}.`);
+  } else {
+    const state = await pywebview.api.get_state();
+    $("hotkey").value = state.settings.hotkey;
+  }
+}
+
+window.addEventListener("keydown", (e) => {
+  if (!recordingHotkey) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.key === "Escape") {
+    stopHotkeyRecording(null);
+    return;
+  }
+  const mods = [];
+  if (e.ctrlKey) mods.push("ctrl");
+  if (e.altKey) mods.push("alt");
+  if (e.shiftKey) mods.push("shift");
+  if (e.metaKey) mods.push("windows");
+  if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+    $("hotkey").value = mods.join("+") + "+…";
+    return;
+  }
+  const key = KEYMAP[e.key] || e.key.toLowerCase();
+  stopHotkeyRecording([...mods, key].join("+"));
+}, true);
 
 document.querySelectorAll(".tabs button").forEach((btn) => {
   btn.onclick = () => {

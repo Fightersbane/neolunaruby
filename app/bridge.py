@@ -124,6 +124,26 @@ class JsApi:
         self._loop.submit(self._player.enqueue(entry["wav"]))
         return {"ok": True}
 
+    def install_cable(self) -> dict:
+        def run():
+            try:
+                from app import cable_install
+
+                self.push({"type": "cable", "status": "downloading"})
+                cable_install.download_and_install()
+                self.push({"type": "cable", "status": "rescanning"})
+                cable_install.rescan_devices()
+                devices = playback.list_output_devices()
+                cable = playback.find_virtual_cable(devices)
+                status = "done" if cable is not None else "restart_needed"
+                self.push({"type": "cable", "status": status, "cable": cable})
+            except Exception as exc:
+                log.exception("VB-Cable install failed")
+                self.push({"type": "cable", "status": "failed", "error": str(exc)})
+
+        threading.Thread(target=run, daemon=True).start()
+        return {"ok": True}
+
     def open_cable_page(self) -> dict:
         import webbrowser
 
