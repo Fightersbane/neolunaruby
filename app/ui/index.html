@@ -26,11 +26,12 @@
 </div>
 
 <nav class="tabs">
-  <button class="active" data-tab="voice">Voice</button>
+  <button class="active" data-tab="speak">Speak</button>
   <button data-tab="history">History</button>
+  <button data-tab="settings">⚙ Settings</button>
 </nav>
 
-<section class="panel active" id="panel-voice">
+<section class="panel active" id="panel-speak">
   <div class="field">
     <label>Output mode</label>
     <div class="seg">
@@ -50,6 +51,15 @@
     <label for="pitch">Pitch <span class="val" id="pitch-val"></span> semitones</label>
     <input type="range" id="pitch" min="-12" max="12" step="1">
   </div>
+</section>
+
+<section class="panel" id="panel-history">
+  <ul id="history-list"></ul>
+  <div class="empty" id="history-empty">Nothing said yet — type above and press Enter.</div>
+</section>
+
+<section class="panel" id="panel-settings">
+  <h3 class="section">Audio output</h3>
   <div class="field">
     <label for="device">Output device</label>
     <div class="row">
@@ -62,31 +72,29 @@
     <label for="monitor">Hear it too (monitor)</label>
     <select id="monitor"></select>
   </div>
+
+  <h3 class="section">Overlay</h3>
   <div class="field">
-    <label for="hotkey">Overlay hotkey</label>
+    <label for="hotkey">Global hotkey</label>
     <div class="row">
       <input type="text" id="hotkey" readonly>
       <button class="quiet" id="hotkey-record">Record</button>
     </div>
   </div>
+
+  <h3 class="section">Discord</h3>
   <div class="field">
-    <label for="allowed-ids">Discord</label>
     <div class="hint" id="discord-status">—</div>
-    <div class="row" style="margin-top:6px">
+    <div class="row" style="margin-top:8px">
       <input type="text" id="allowed-ids" placeholder="Allowed Discord user IDs, comma-separated">
       <button class="quiet" id="allowed-save">Save</button>
     </div>
     <div class="hint" id="discord-links"></div>
-    <label class="hint" style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer">
-      <input type="checkbox" id="say-posts-text" style="accent-color:var(--teal)">
+    <label class="hint check" style="margin-top:8px">
+      <input type="checkbox" id="say-posts-text">
       Post the spoken text into the chat (/say replies visibly)
     </label>
   </div>
-</section>
-
-<section class="panel" id="panel-history">
-  <ul id="history-list"></ul>
-  <div class="empty" id="history-empty">Nothing said yet — type above and press Enter.</div>
 </section>
 
 <div class="toast" id="toast"></div>

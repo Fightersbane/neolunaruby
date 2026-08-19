@@ -81,6 +81,7 @@ button {
   font: 600 13px "Segoe UI", system-ui, sans-serif;
   padding: 0 16px;
   cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 button:hover { background: var(--teal); color: #08211f; }
 button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
@@ -117,20 +118,38 @@ button.quiet:hover { border-color: var(--teal); color: var(--text); }
 }
 
 /* ---------- tabs ---------- */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .tabs button {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   border-radius: 0;
   color: var(--muted);
-  padding: 7px 14px;
+  padding: 8px 14px;
+  transition: color 0.15s;
 }
 .tabs button.active { color: var(--text); border-bottom-color: var(--teal); }
 .tabs button:hover { color: var(--text); background: none; }
+.tabs button:last-child { margin-left: auto; }
 
 .panel { display: none; }
-.panel.active { display: block; }
+.panel.active { display: block; animation: fadein 0.15s ease-out; }
+@keyframes fadein { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .panel.active { animation: none; } }
+
+h3.section {
+  font: 600 10px var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--panel-2);
+  padding-bottom: 5px;
+  margin: 18px 0 12px;
+}
+h3.section:first-child { margin-top: 2px; }
+
+.check { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.check input[type="checkbox"] { accent-color: var(--teal); width: auto; }
 
 /* ---------- settings ---------- */
 .field { margin-bottom: 14px; }
@@ -147,7 +166,9 @@ select, input[type="text"] {
   padding: 8px 10px;
   user-select: text;
 }
+select, input[type="text"] { transition: border-color 0.15s; }
 select:focus, input[type="text"]:focus { outline: none; border-color: var(--teal); }
+select:hover, input[type="text"]:hover { border-color: var(--teal-dim); }
 
 input[type="range"] { width: 100%; accent-color: var(--teal); }
 
@@ -163,7 +184,12 @@ input[type="range"] { width: 100%; accent-color: var(--teal); }
   gap: 10px;
   padding: 8px 6px;
   border-bottom: 1px solid var(--panel-2);
+  border-radius: 4px;
+  transition: background 0.15s;
 }
+#history-list li:hover { background: var(--panel-2); }
+#history-list::-webkit-scrollbar { width: 8px; }
+#history-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 #history-list .htext {
   flex: 1;
   overflow: hidden;
