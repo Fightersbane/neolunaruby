@@ -5,6 +5,11 @@ discord.py[voice]
 python-dotenv
 kokoro-onnx
 sounddevice
+pywebview
+keyboard
+pystray
+pillow
+nvidia-ml-py
 # kokoro-onnx drags in plain onnxruntime which shadows the GPU build; keep the
 # CUDA-12-matched GPU build pinned (torch cu128 ships the matching DLLs)
 onnxruntime-gpu==1.23.2
