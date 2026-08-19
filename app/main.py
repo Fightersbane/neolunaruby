@@ -53,6 +53,9 @@ def main() -> None:
     loop.submit(_start_player(player)).result(timeout=10)
 
     api = JsApi(loop, player, cfg, lambda c: config.save(CONFIG_PATH, c))
+    player.on_error = lambda msg: api.push(
+        {"type": "state", "state": api.state, "error": f"Playback failed: {msg}"}
+    )
 
     window = webview.create_window(
         "neolunamiku",

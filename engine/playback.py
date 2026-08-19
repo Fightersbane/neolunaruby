@@ -58,23 +58,27 @@ def list_output_devices() -> list[dict]:
 
 def test_tone(device: int | None = None) -> None:
     import numpy as np
-    import sounddevice as sd
 
     sr = 48000
     t = np.linspace(0, 0.4, int(sr * 0.4), endpoint=False)
     tone = (0.2 * np.sin(2 * np.pi * 440 * t)).astype("float32")
-    sd.play(tone, sr, device=device)
-    sd.wait()
+    AudioPlayer._play_to(device, tone, sr)
 
 
 class AudioPlayer:
     """Plays wavs sequentially to one output device. One consumer task."""
 
-    def __init__(self, device: int | None = None, monitor_device: int | None = None) -> None:
+    def __init__(
+        self,
+        device: int | None = None,
+        monitor_device: int | None = None,
+        on_error=None,
+    ) -> None:
         self.device = device
         # second sink so the speaker can hear their own Miku while the primary
         # sink is a virtual mic; None = off
         self.monitor_device = monitor_device
+        self.on_error = on_error  # callable(str); playback must never fail silently
         self._queue: asyncio.Queue = asyncio.Queue()
         self._task: asyncio.Task | None = None
 
@@ -106,8 +110,13 @@ class AudioPlayer:
             wav_path = await self._queue.get()
             try:
                 await asyncio.to_thread(self._play_blocking, wav_path)
-            except Exception:
+            except Exception as exc:
                 log.exception("Playback failed for %s", wav_path)
+                if self.on_error:
+                    try:
+                        self.on_error(f"{type(exc).__name__}: {exc}")
+                    except Exception:
+                        log.exception("on_error callback failed")
             finally:
                 self._queue.task_done()
 
@@ -131,7 +140,21 @@ class AudioPlayer:
 
         if data.ndim == 1:
             data = data.reshape(-1, 1)
+        extra = None
+        if device is not None:
+            try:
+                hostapi = sd.query_hostapis(sd.query_devices(device)["hostapi"])
+                if hostapi["name"] == PREFERRED_HOSTAPI:
+                    # WASAPI shared mode rejects rates that differ from the
+                    # endpoint's mix format; let Windows convert instead.
+                    extra = sd.WasapiSettings(auto_convert=True)
+            except Exception:
+                log.debug("hostapi lookup failed for device %s", device, exc_info=True)
         with sd.OutputStream(
-            samplerate=sr, device=device, channels=data.shape[1], dtype="float32"
+            samplerate=sr,
+            device=device,
+            channels=data.shape[1],
+            dtype="float32",
+            extra_settings=extra,
         ) as stream:
             stream.write(data)

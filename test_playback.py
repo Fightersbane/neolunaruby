@@ -117,6 +117,24 @@ class TestAudioPlayer:
 
         assert asyncio.run(run()) == ["a.wav", "b.wav", "c.wav"]
 
+    def test_on_error_fires_when_playback_raises(self, monkeypatch):
+        async def run():
+            errors = []
+            player = playback.AudioPlayer(device=None, on_error=errors.append)
+
+            def boom(path):
+                raise RuntimeError("device exploded")
+
+            monkeypatch.setattr(player, "_play_blocking", boom)
+            player.start()
+            await player.enqueue("a.wav")
+            await player.wait_idle()
+            await player.stop()
+            return errors
+
+        errors = asyncio.run(run())
+        assert errors and "device exploded" in errors[0]
+
     def test_drain_discards_pending(self, monkeypatch):
         async def run():
             played = []
