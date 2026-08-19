@@ -1,3 +1,5 @@
+import asyncio
+
 from engine import playback
 
 RAW = [
@@ -25,3 +27,46 @@ class TestFindVirtualCable:
     def test_none_when_absent(self):
         devs = playback._normalize_devices(RAW[:2], default_index=1)
         assert playback.find_virtual_cable(devs) is None
+
+
+class TestAudioPlayer:
+    def _player_with_recorder(self, monkeypatch, played, delay=0.0):
+        player = playback.AudioPlayer(device=None)
+
+        def fake_play(path):
+            import time
+
+            time.sleep(delay)
+            played.append(path)
+
+        monkeypatch.setattr(player, "_play_blocking", fake_play)
+        return player
+
+    def test_plays_in_order(self, monkeypatch):
+        async def run():
+            played = []
+            player = self._player_with_recorder(monkeypatch, played, delay=0.01)
+            player.start()
+            await player.enqueue("a.wav")
+            await player.enqueue("b.wav")
+            await player.enqueue("c.wav")
+            await player.wait_idle()
+            await player.stop()
+            return played
+
+        assert asyncio.run(run()) == ["a.wav", "b.wav", "c.wav"]
+
+    def test_drain_discards_pending(self, monkeypatch):
+        async def run():
+            played = []
+            player = self._player_with_recorder(monkeypatch, played, delay=0.05)
+            player.start()
+            await player.enqueue("a.wav")
+            await player.enqueue("b.wav")
+            await asyncio.sleep(0.01)  # a.wav is mid-play
+            player.drain()
+            await player.wait_idle()
+            await player.stop()
+            return played
+
+        assert asyncio.run(run()) == ["a.wav"]
