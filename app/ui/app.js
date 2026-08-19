@@ -140,6 +140,27 @@ async function setSetting(key, value) {
   return res.ok;
 }
 
+function renderPhrases(phrases) {
+  const box = $("phrases");
+  box.replaceChildren();
+  if (!phrases.length) {
+    const none = document.createElement("div");
+    none.className = "none";
+    none.textContent = "None yet - add some in Settings.";
+    box.append(none);
+    return;
+  }
+  for (const phrase of phrases) {
+    const btn = document.createElement("button");
+    btn.textContent = phrase;
+    btn.onclick = async () => {
+      const res = await pywebview.api.say(phrase);
+      if (!res.ok) toast(res.error);
+    };
+    box.append(btn);
+  }
+}
+
 function renderHistory(items) {
   const list = $("history-list");
   list.replaceChildren();
@@ -227,6 +248,10 @@ async function init() {
   setModeUI(s.mode);
   $("allowed-ids").value = (s.allowed_dm_users || []).join(", ");
   $("say-posts-text").checked = !!s.say_posts_text;
+  $("accept-discord").checked = !!s.accept_discord_input;
+  $("start-with-windows").checked = !!s.start_with_windows;
+  $("phrases-edit").value = (s.quick_phrases || []).join("\n");
+  renderPhrases(s.quick_phrases || []);
   renderDiscord(state.discord || { status: "no token configured" });
   $("chip-version").textContent = `v${state.version || "dev"}`;
 
@@ -266,6 +291,21 @@ async function maybeShowWizard() {
     pct.textContent = "waiting";
     li.append(label, pct);
     list.append(li);
+  }
+  const dev = await pywebview.api.list_devices();
+  const cableHint = $("wizard-cable-hint");
+  cableHint.replaceChildren();
+  if (dev.cable === null) {
+    cableHint.append("Needed so other programs hear you as a microphone. ");
+    const b = document.createElement("button");
+    b.textContent = "Install VB-Cable";
+    b.onclick = () => {
+      cableHint.textContent = "Starting download...";
+      pywebview.api.install_cable();
+    };
+    cableHint.append(b);
+  } else {
+    cableHint.textContent = "Installed - pick CABLE Output as your microphone in Discord.";
   }
   $("wizard-token-field").hidden = setup.token_configured;
   $("wizard").hidden = false;
@@ -323,6 +363,19 @@ document.querySelectorAll(".seg button").forEach((btn) => {
 });
 
 $("say-posts-text").onchange = (e) => setSetting("say_posts_text", e.target.checked);
+$("accept-discord").onchange = (e) => setSetting("accept_discord_input", e.target.checked);
+$("start-with-windows").onchange = async (e) => {
+  if (!(await setSetting("start_with_windows", e.target.checked))) e.target.checked = !e.target.checked;
+};
+$("phrases-save").onclick = async () => {
+  if (await setSetting("quick_phrases", $("phrases-edit").value)) {
+    const state = await pywebview.api.get_state();
+    const phrases = state.settings.quick_phrases || [];
+    $("phrases-edit").value = phrases.join("\n");
+    renderPhrases(phrases);
+    toast("Quick phrases saved.");
+  }
+};
 
 $("allowed-save").onclick = async () => {
   if (await setSetting("allowed_dm_users", $("allowed-ids").value)) {

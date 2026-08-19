@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.0 — 2026-08-19
+
+- Quick phrases: one-click common lines, editable in Settings.
+- "Accept messages from Discord" switch - when off, `/say` and DMs answer "Mic is off"
+  and nothing is spoken. Discord cannot tell an app whether you are in a DM call, so
+  this switch is the control that exists.
+- Start automatically when Windows starts (optional).
+- Warns when synthesis falls back to the CPU, and writes a rotating log to `logs/`.
+- Setup covers the virtual microphone, and the README explains the Discord audio
+  settings that otherwise chop up synthesized speech.
+- Discord-visible text carries no character branding.
+- `bot.py` now shares the app's client, so the allowlist applies there too (196 -> 70 lines).
+- CI also lints (ruff) and checks JavaScript syntax; uninstall removes downloaded models.
+
 ## 0.4.0 — 2026-08-19
 
 - Renamed to neolunaruby. Voice presets are still named Miku.

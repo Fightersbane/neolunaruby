@@ -33,11 +33,22 @@
 
 <section class="panel active" id="panel-speak">
   <div class="field">
+    <label>Quick phrases</label>
+    <div class="phrases" id="phrases"></div>
+  </div>
+  <div class="field">
     <label>Output mode</label>
     <div class="seg">
       <button data-mode="mic" id="mode-mic">🎤 Virtual mic</button>
       <button data-mode="bot" id="mode-bot">🤖 Server voice</button>
     </div>
+  </div>
+  <div class="field">
+    <label class="check">
+      <input type="checkbox" id="accept-discord">
+      Accept messages from Discord
+    </label>
+    <div class="hint">When off, /say and DMs reply "Mic is off" and nothing is spoken.</div>
   </div>
   <div class="field">
     <label for="preset">Voice</label>
@@ -73,6 +84,23 @@
     <select id="monitor"></select>
   </div>
 
+  <div class="field">
+    <div class="hint">
+      In Discord: set your input device to CABLE Output, then turn off
+      <b>Noise Suppression</b>, <b>Echo Cancellation</b> and <b>Automatic Gain Control</b>
+      under Voice &amp; Video - they treat synthesized speech as noise and cut it up.
+    </div>
+  </div>
+
+  <h3 class="section">Quick phrases</h3>
+  <div class="field">
+    <label for="phrases-edit">One per line, up to 12</label>
+    <textarea id="phrases-edit" rows="6"></textarea>
+    <div class="row" style="margin-top:6px">
+      <button class="quiet" id="phrases-save">Save phrases</button>
+    </div>
+  </div>
+
   <h3 class="section">Overlay</h3>
   <div class="field">
     <label for="hotkey">Global hotkey</label>
@@ -80,6 +108,13 @@
       <input type="text" id="hotkey" readonly>
       <button class="quiet" id="hotkey-record">Record</button>
     </div>
+  </div>
+
+  <div class="field">
+    <label class="check">
+      <input type="checkbox" id="start-with-windows">
+      Start automatically when Windows starts
+    </label>
   </div>
 
   <h3 class="section">Discord</h3>
@@ -100,9 +135,13 @@
 <div class="wizard" id="wizard" hidden>
   <div class="wizard-card">
     <div class="wordmark" style="margin-bottom:10px"><span>CV01</span> <b>FIRST-RUN SETUP</b></div>
-    <p class="hint" style="margin-bottom:12px">Miku needs her voice models (about 1.3 GB, one time, from their official sources).</p>
+    <p class="hint" style="margin-bottom:12px">The voice models download once, about 1.3 GB, from their official sources.</p>
     <ul id="wizard-assets"></ul>
     <button id="wizard-download" style="width:100%;margin-top:10px;padding:10px 0">Download everything</button>
+    <div class="field" id="wizard-cable-field" style="margin-top:14px">
+      <label>Virtual microphone</label>
+      <div class="hint" id="wizard-cable-hint"></div>
+    </div>
     <div class="field" id="wizard-token-field" style="margin-top:14px">
       <label for="wizard-token">Discord bot token (optional — enables /say in DMs and server voice)</label>
       <div class="row">

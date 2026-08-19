@@ -17,6 +17,12 @@ jobs:
       # monkeypatched, heavy deps import lazily. No torch/models needed here.
       - name: Install test dependencies
         run: pip install pytest numpy soundfile
+      - name: Lint (undefined names, unused imports)
+        run: |
+          pip install ruff
+          ruff check .
+      - name: Check JavaScript syntax
+        run: node --check app/ui/app.js
       - name: Byte-compile all sources
         run: python -m compileall -q app engine bot.py scripts
       - name: Run tests

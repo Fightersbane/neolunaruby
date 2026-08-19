@@ -4,18 +4,27 @@ import base64
 import logging
 import os
 import threading
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import webview
 from dotenv import load_dotenv
 
-from engine import pipeline, playback
-
 from app import config
 from app.bridge import JsApi
 from app.engineloop import EngineLoop
+from engine import pipeline, playback
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        RotatingFileHandler(LOG_DIR / "app.log", maxBytes=2_000_000, backupCount=3, encoding="utf-8"),
+    ],
+)
 log = logging.getLogger("app")
 
 BASE = Path(__file__).resolve().parent
@@ -77,6 +86,14 @@ def main() -> None:
     pipeline.SETTINGS["n_semitones"] = cfg["n_semitones"]
     pipeline.purge_outputs()
 
+    from app import startup
+
+    try:
+        if cfg["start_with_windows"] != startup.is_enabled():
+            startup.set_enabled(cfg["start_with_windows"])
+    except OSError:
+        log.warning("Could not sync the Windows startup entry", exc_info=True)
+
     loop = EngineLoop()
     loop.start()
     devices = playback.list_output_devices()
@@ -107,6 +124,7 @@ def main() -> None:
             guild_id=os.getenv("GUILD_ID"),
             on_status=api.set_discord_status,
             say_posts_text=lambda: cfg["say_posts_text"],
+            input_enabled=lambda: cfg["accept_discord_input"],
         )
         api.discord_client = discord_client
         app_id = _app_id_from_token(token)
@@ -257,7 +275,14 @@ def main() -> None:
     def warm():
         try:
             loop.submit(pipeline.warmup()).result(timeout=300)
-            api.set_state("ready")
+            if pipeline.gpu_active():
+                api.set_state("ready")
+            else:
+                api.set_state(
+                    "ready",
+                    "No GPU in use - speech will take several seconds per message. "
+                    "Check that an NVIDIA GPU and its drivers are present.",
+                )
         except Exception as exc:
             log.exception("warmup failed")
             api.set_state("error", f"Voice engine failed to start: {exc}")

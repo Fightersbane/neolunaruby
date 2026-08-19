@@ -50,6 +50,7 @@ Filename: "{app}\neolunaruby.cmd"; Description: "Launch {#AppName} (first launch
 [UninstallDelete]
 ; Generated at runtime, not tracked by the installer
 Type: filesandordirs; Name: "{app}\.venv"
+Type: filesandordirs; Name: "{app}\models"
 Type: filesandordirs; Name: "{app}\audio"
 Type: filesandordirs; Name: "{app}\logs"
 Type: filesandordirs; Name: "{app}\__pycache__"
