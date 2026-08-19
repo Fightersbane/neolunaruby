@@ -8,6 +8,15 @@ RAW = [
     {"name": "CABLE Input (VB-Audio Virtual Cable)", "max_output_channels": 2, "index": 2},
 ]
 
+# Windows exposes the same physical device once per host API; only the
+# WASAPI entries should survive when any exist.
+RAW_MULTI_API = [
+    {"name": "Speakers (Realtek(R) Au", "max_output_channels": 2, "index": 1, "hostapi_name": "MME"},
+    {"name": "Speakers (Realtek(R) Audio)", "max_output_channels": 2, "index": 5, "hostapi_name": "Windows DirectSound"},
+    {"name": "Speakers (Realtek(R) Audio)", "max_output_channels": 2, "index": 9, "hostapi_name": "Windows WASAPI"},
+    {"name": "CABLE Input (VB-Audio Virtual Cable)", "max_output_channels": 2, "index": 10, "hostapi_name": "Windows WASAPI"},
+]
+
 
 class TestNormalizeDevices:
     def test_keeps_only_output_devices(self):
@@ -17,6 +26,15 @@ class TestNormalizeDevices:
     def test_marks_default(self):
         devs = playback._normalize_devices(RAW, default_index=1)
         assert [d["is_default"] for d in devs] == [True, False]
+
+    def test_prefers_wasapi_entries_when_present(self):
+        devs = playback._normalize_devices(RAW_MULTI_API, default_index=9)
+        assert [d["index"] for d in devs] == [9, 10]
+        assert devs[0]["is_default"] is True
+
+    def test_keeps_all_when_no_wasapi(self):
+        devs = playback._normalize_devices(RAW_MULTI_API[:2], default_index=1)
+        assert [d["index"] for d in devs] == [1, 5]
 
 
 class TestFindVirtualCable:

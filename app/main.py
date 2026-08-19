@@ -69,9 +69,30 @@ def main() -> None:
     api._windows.extend([window, overlay])
 
     # ---- overlay + hotkey ------------------------------------------------
+    def _force_foreground(title: str) -> None:
+        """Steal foreground focus for our window. Windows only grants
+        SetForegroundWindow to the active process; a synthetic Alt press is the
+        long-standing sanctioned nudge that lifts that restriction."""
+        import ctypes
+        import time as _time
+
+        u32 = ctypes.windll.user32
+        hwnd = 0
+        for _ in range(10):
+            hwnd = u32.FindWindowW(None, title)
+            if hwnd:
+                break
+            _time.sleep(0.05)
+        if not hwnd:
+            return
+        keyboard.press_and_release("alt")
+        u32.ShowWindow(hwnd, 9)  # SW_RESTORE
+        u32.SetForegroundWindow(hwnd)
+
     def show_overlay():
         overlay.show()
         try:
+            _force_foreground("miku-overlay")
             overlay.evaluate_js("focusInput()")
         except Exception:
             log.debug("overlay focus failed", exc_info=True)

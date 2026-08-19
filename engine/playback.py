@@ -6,11 +6,18 @@ import logging
 log = logging.getLogger(__name__)
 
 
+PREFERRED_HOSTAPI = "Windows WASAPI"
+
+
 def _normalize_devices(raw: list[dict], default_index: int) -> list[dict]:
+    outs = [d for d in raw if d.get("max_output_channels", 0) > 0]
+    # Windows lists every device once per host API (MME, DirectSound, WASAPI,
+    # WDM-KS) — keep only the WASAPI entries when any exist to avoid duplicates.
+    wasapi = [d for d in outs if d.get("hostapi_name") == PREFERRED_HOSTAPI]
+    chosen = wasapi or outs
     return [
         {"index": d["index"], "name": d["name"], "is_default": d["index"] == default_index}
-        for d in raw
-        if d.get("max_output_channels", 0) > 0
+        for d in chosen
     ]
 
 
@@ -24,8 +31,18 @@ def find_virtual_cable(devices: list[dict]) -> int | None:
 def list_output_devices() -> list[dict]:
     import sounddevice as sd
 
-    raw = [{**d, "index": i} for i, d in enumerate(sd.query_devices())]
+    hostapis = list(sd.query_hostapis())
+    raw = [
+        {**d, "index": i, "hostapi_name": hostapis[d["hostapi"]]["name"]}
+        for i, d in enumerate(sd.query_devices())
+    ]
     default_out = sd.default.device[1]
+    # When filtering to WASAPI, the global default index (usually an MME entry)
+    # won't survive — use WASAPI's own default output instead.
+    for api in hostapis:
+        if api["name"] == PREFERRED_HOSTAPI and api.get("default_output_device", -1) >= 0:
+            default_out = api["default_output_device"]
+            break
     return _normalize_devices(raw, default_out)
 
 

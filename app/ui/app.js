@@ -88,10 +88,42 @@ async function refreshTelemetry() {
   const res = await pywebview.api.get_telemetry();
   if (!res.ok) return;
   if (res.gpu) {
-    $("chip-gpu").innerHTML = `GPU <b>${res.gpu.util}%</b>`;
-    $("chip-vram").innerHTML = `VRAM <b>${(res.gpu.vram_used_mb / 1024).toFixed(1)}G</b>`;
+    const g = res.gpu;
+    $("chip-gpu").innerHTML = `GPU <b>${g.util}%</b>`;
+    $("chip-gpu").title = g.util_scope === "app" ? "this app's GPU use" : "whole-system GPU use (per-app not supported by driver)";
+    if (g.app_vram_mb != null) {
+      $("chip-vram").innerHTML = `VRAM <b>${(g.app_vram_mb / 1024).toFixed(1)}G</b>`;
+      $("chip-vram").title = `this app: ${(g.app_vram_mb / 1024).toFixed(1)} GB · system: ${(g.vram_used_mb / 1024).toFixed(1)} / ${(g.vram_total_mb / 1024).toFixed(1)} GB`;
+    } else {
+      $("chip-vram").innerHTML = `VRAM <b>${(g.vram_used_mb / 1024).toFixed(1)}G</b>`;
+      $("chip-vram").title = "whole-system VRAM use";
+    }
   }
   showLatency(res.last_timing);
+}
+
+function renderCableHint(dev, currentDevice) {
+  const hint = $("cable-hint");
+  hint.replaceChildren();
+  if (dev.cable === null) {
+    hint.append("No virtual mic found — ");
+    const btn = document.createElement("button");
+    btn.textContent = "get VB-Cable";
+    btn.onclick = () => pywebview.api.open_cable_page();
+    hint.append(btn, " (free driver), then restart the app.");
+  } else if (currentDevice !== dev.cable) {
+    const btn = document.createElement("button");
+    btn.textContent = "🎤 Use virtual mic";
+    btn.onclick = async () => {
+      if (await setSetting("device", dev.cable)) {
+        $("device").value = String(dev.cable);
+        renderCableHint(dev, dev.cable);
+      }
+    };
+    hint.append(btn, " — then pick “CABLE Output” as your mic in Discord.");
+  } else {
+    hint.append("Speaking into the virtual mic — set Discord's input to “CABLE Output”.");
+  }
 }
 
 // ---------- init ----------
@@ -114,6 +146,7 @@ async function init() {
     options.push(new Option(label, d.index, false, d.index === s.device));
   }
   $("device").replaceChildren(...options);
+  renderCableHint(dev, s.device);
 
   renderHistory((await pywebview.api.get_history()).items);
   refreshTelemetry();

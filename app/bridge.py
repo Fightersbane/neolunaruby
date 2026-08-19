@@ -124,6 +124,12 @@ class JsApi:
         self._loop.submit(self._player.enqueue(entry["wav"]))
         return {"ok": True}
 
+    def open_cable_page(self) -> dict:
+        import webbrowser
+
+        webbrowser.open("https://vb-audio.com/Cable/")
+        return {"ok": True}
+
     def get_telemetry(self) -> dict:
         return {
             "ok": True,
