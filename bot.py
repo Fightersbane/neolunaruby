@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from engine import pipeline
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-log = logging.getLogger("neolunamiku")
+log = logging.getLogger("neolunaruby")
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")

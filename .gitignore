@@ -5,4 +5,5 @@ models/
 output/
 audio/
 config.json
+logs/
 *.wav

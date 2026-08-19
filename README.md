@@ -1,6 +1,6 @@
-# neolunamiku
+# neolunaruby
 
-![CI](https://github.com/Fightersbane/neolunamiku/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Fightersbane/neolunaruby/actions/workflows/ci.yml/badge.svg)
 
 Type a message and hear it spoken in a Hatsune Miku voice - in a Discord call, a game, or any program that takes microphone input. An accessibility tool for taking part in voice calls by typing.
 

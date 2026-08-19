@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 BASE = Path(__file__).resolve().parents[1]
 VERSION_FILE = BASE / "VERSION"
 TORCH_INDEX = "https://download.pytorch.org/whl/cu128"
-REPO = "Fightersbane/neolunamiku"
+REPO = "Fightersbane/neolunaruby"
 ZIP_URL = f"https://codeload.github.com/{REPO}/zip/refs/heads/main"
 RAW_VERSION_URL = f"https://raw.githubusercontent.com/{REPO}/main/VERSION"
 
@@ -92,7 +92,7 @@ def _apply_zip_overlay() -> None:
             zip_path.write_bytes(r.content)
         with zipfile.ZipFile(zip_path) as z:
             z.extractall(tmp)
-        root = next(p for p in tmp.iterdir() if p.is_dir())  # neolunamiku-main/
+        root = next(p for p in tmp.iterdir() if p.is_dir())  # neolunaruby-main/
         for rel in CODE_PATHS:
             src = root / rel
             dst = BASE / rel

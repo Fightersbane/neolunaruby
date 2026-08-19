@@ -1,4 +1,4 @@
-"""neolunamiku desktop app entry point: window + overlay + hotkey + tray."""
+"""neolunaruby desktop app entry point: window + overlay + hotkey + tray."""
 
 import base64
 import logging
@@ -100,7 +100,7 @@ def main() -> None:
         loop.submit(discord_client.start(token))
 
     window = webview.create_window(
-        "neolunamiku",
+        "neolunaruby",
         url=str(BASE / "ui" / "index.html"),
         js_api=api,
         width=560,
@@ -109,7 +109,7 @@ def main() -> None:
         background_color="#0e1416",
     )
     overlay = webview.create_window(
-        "miku-overlay",
+        "neolunaruby-overlay",
         url=str(BASE / "ui" / "overlay.html"),
         js_api=api,
         width=440,
@@ -145,7 +145,7 @@ def main() -> None:
     def show_overlay():
         overlay.show()
         try:
-            _force_foreground("miku-overlay")
+            _force_foreground("neolunaruby-overlay")
             overlay.evaluate_js("focusInput()")
         except Exception:
             log.debug("overlay focus failed", exc_info=True)
@@ -201,9 +201,9 @@ def main() -> None:
                 pass
 
     tray = pystray.Icon(
-        "neolunamiku",
+        "neolunaruby",
         _tray_icon_image(),
-        "neolunamiku",
+        "neolunaruby",
         menu=pystray.Menu(
             pystray.MenuItem("Show", tray_show, default=True),
             pystray.MenuItem("Quit", tray_quit),
