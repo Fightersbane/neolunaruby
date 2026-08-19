@@ -12,6 +12,11 @@ from app.history import History
 log = logging.getLogger(__name__)
 
 
+def parse_id_list(raw: str) -> list[str]:
+    """Comma-separated Discord user IDs; only all-digit entries survive."""
+    return [p.strip() for p in raw.split(",") if p.strip().isdigit()]
+
+
 class JsApi:
     def __init__(self, engine_loop, player, cfg, save_cfg) -> None:
         self._loop = engine_loop

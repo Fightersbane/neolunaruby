@@ -32,3 +32,14 @@ class TestHistory:
         h = History()
         e = _add(h, tmp_path, "a.wav")
         assert h.get(e["id"])["text"] == "a.wav"
+
+    def test_origin_defaults_to_app(self, tmp_path):
+        h = History()
+        assert _add(h, tmp_path, "a.wav")["origin"] == "app"
+
+    def test_custom_origin_round_trips(self, tmp_path):
+        h = History()
+        wav = tmp_path / "d.wav"
+        wav.write_bytes(b"\x00")
+        h.add("from dm", wav, {"total": 1}, origin="dm")
+        assert h.items()[0]["origin"] == "dm"
