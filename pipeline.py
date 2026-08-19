@@ -48,12 +48,15 @@ SETTINGS = {
     "protect_rate": 0.33,
 }
 
-# Each preset carries the transpose that lands that base voice in Miku's register.
+# Every preset is Miku — the entries differ only in the hidden base voice that
+# feeds the Miku RVC model (flavors prosody) and the transpose that lands it in
+# her register. The cloud backups keep the voice available if the local
+# engine ever breaks; they need internet and are ~1s slower.
 VOICE_PRESETS = {
-    "Heart (local)": {"engine": "kokoro", "voice": "af_heart", "n_semitones": 10},
-    "Bella (local)": {"engine": "kokoro", "voice": "af_bella", "n_semitones": 10},
-    "Ana (cloud)": {"engine": "edge", "voice": "en-US-AnaNeural", "n_semitones": 2},
-    "Jenny (cloud)": {"engine": "edge", "voice": "en-US-JennyNeural", "n_semitones": 6},
+    "Miku": {"engine": "kokoro", "voice": "af_heart", "n_semitones": 10},
+    "Miku (soft)": {"engine": "kokoro", "voice": "af_bella", "n_semitones": 10},
+    "Miku (cloud backup)": {"engine": "edge", "voice": "en-US-AnaNeural", "n_semitones": 2},
+    "Miku (cloud backup 2)": {"engine": "edge", "voice": "en-US-JennyNeural", "n_semitones": 6},
 }
 
 # One GPU job at a time; discord.py's event loop stays free via to_thread.

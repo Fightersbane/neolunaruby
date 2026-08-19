@@ -1,7 +1,7 @@
 # neolunamiku
 
 Discord TTS bot: type `/say <text>`, hear it in a Hatsune Miku voice in your voice channel.
-Built as an accessibility tool so a mute friend can take part in voice calls.
+An accessibility tool for taking part in voice calls by typing.
 
 Pipeline: edge-tts (base English voice) → RVC Miku voice conversion (CUDA) → Discord voice.
 

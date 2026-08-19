@@ -55,22 +55,25 @@ class TestApplyVoicePreset:
     def test_applies_engine_voice_and_transpose(self):
         saved = dict(pipeline.SETTINGS)
         try:
-            pipeline.apply_voice_preset("Ana (cloud)")
+            pipeline.apply_voice_preset("Miku (cloud backup)")
             assert pipeline.SETTINGS["engine"] == "edge"
             assert pipeline.SETTINGS["voice"] == "en-US-AnaNeural"
             assert pipeline.SETTINGS["n_semitones"] == 2
-            pipeline.apply_voice_preset("Heart (local)")
+            pipeline.apply_voice_preset("Miku")
             assert pipeline.SETTINGS["engine"] == "kokoro"
             assert pipeline.SETTINGS["voice"] == "af_heart"
         finally:
             pipeline.SETTINGS.clear()
             pipeline.SETTINGS.update(saved)
 
+    def test_all_presets_are_miku_labelled(self):
+        assert all(name.startswith("Miku") for name in pipeline.VOICE_PRESETS)
+
     def test_preserves_speed_and_quality_settings(self):
         saved = dict(pipeline.SETTINGS)
         try:
             pipeline.SETTINGS["speed"] = 1.25
-            pipeline.apply_voice_preset("Jenny (cloud)")
+            pipeline.apply_voice_preset("Miku (cloud backup 2)")
             assert pipeline.SETTINGS["speed"] == 1.25
             assert pipeline.SETTINGS["index_rate"] == saved["index_rate"]
         finally:
