@@ -1,0 +1,375 @@
+2026-08-19 12:55:40 - INFO - ultimate_rvc.core.generate.common - Audio info:
+{
+    "index": "0",
+    "codec_name": "mp3",
+    "codec_long_name": "MP3 (MPEG audio layer 3)",
+    "profile": "unknown",
+    "codec_type": "audio",
+    "codec_tag_string": "[0][0][0][0]",
+    "codec_tag": "0x0000",
+    "mime_codec_string": "mp4a.40.34",
+    "sample_fmt": "fltp",
+    "sample_rate": "24000",
+    "channels": "1",
+    "channel_layout": "mono",
+    "bits_per_sample": "0",
+    "initial_padding": "0",
+    "id": "N/A",
+    "r_frame_rate": "0/0",
+    "avg_frame_rate": "0/0",
+    "time_base": "1/14112000",
+    "start_pts": "0",
+    "start_time": "0.000000",
+    "duration_ts": "96526080",
+    "duration": "6.840000",
+    "bit_rate": "48000",
+    "max_bit_rate": "N/A",
+    "bits_per_raw_sample": "N/A",
+    "nb_frames": "N/A",
+    "nb_read_frames": "N/A",
+    "nb_read_packets": "N/A",
+    "DISPOSITION": {
+        "default": "0",
+        "dub": "0",
+        "original": "0",
+        "comment": "0",
+        "lyrics": "0",
+        "karaoke": "0",
+        "forced": "0",
+        "hearing_impaired": "0",
+        "visual_impaired": "0",
+        "clean_effects": "0",
+        "attached_pic": "0",
+        "timed_thumbnails": "0",
+        "non_diegetic": "0",
+        "captions": "0",
+        "descriptions": "0",
+        "metadata": "0",
+        "dependent": "0",
+        "still_image": "0",
+        "multilayer": "0"
+    },
+    "filename": "C:\\Users\\lmsou\\dev\\neolunamiku\\audio\\speech\\1_EdgeTTS_Audio_86f1a071ac.wav",
+    "nb_streams": "1",
+    "nb_programs": "0",
+    "nb_stream_groups": "0",
+    "format_name": "mp3",
+    "format_long_name": "MP2/3 (MPEG audio layer 2/3)",
+    "size": "41040",
+    "probe_score": "52"
+}
+2026-08-19 12:55:52 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 12:55:53 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 12:56:16 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 12:56:16 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 12:56:18 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\speech\1_EdgeTTS_Audio_86f1a071ac.wav'...
+2026-08-19 12:58:28 - INFO - ultimate_rvc.core.generate.common - Audio info:
+{
+    "index": "0",
+    "codec_name": "mp3",
+    "codec_long_name": "MP3 (MPEG audio layer 3)",
+    "profile": "unknown",
+    "codec_type": "audio",
+    "codec_tag_string": "[0][0][0][0]",
+    "codec_tag": "0x0000",
+    "mime_codec_string": "mp4a.40.34",
+    "sample_fmt": "fltp",
+    "sample_rate": "24000",
+    "channels": "1",
+    "channel_layout": "mono",
+    "bits_per_sample": "0",
+    "initial_padding": "0",
+    "id": "N/A",
+    "r_frame_rate": "0/0",
+    "avg_frame_rate": "0/0",
+    "time_base": "1/14112000",
+    "start_pts": "0",
+    "start_time": "0.000000",
+    "duration_ts": "96526080",
+    "duration": "6.840000",
+    "bit_rate": "48000",
+    "max_bit_rate": "N/A",
+    "bits_per_raw_sample": "N/A",
+    "nb_frames": "N/A",
+    "nb_read_frames": "N/A",
+    "nb_read_packets": "N/A",
+    "DISPOSITION": {
+        "default": "0",
+        "dub": "0",
+        "original": "0",
+        "comment": "0",
+        "lyrics": "0",
+        "karaoke": "0",
+        "forced": "0",
+        "hearing_impaired": "0",
+        "visual_impaired": "0",
+        "clean_effects": "0",
+        "attached_pic": "0",
+        "timed_thumbnails": "0",
+        "non_diegetic": "0",
+        "captions": "0",
+        "descriptions": "0",
+        "metadata": "0",
+        "dependent": "0",
+        "still_image": "0",
+        "multilayer": "0"
+    },
+    "filename": "C:\\Users\\lmsou\\dev\\neolunamiku\\audio\\speech\\1_EdgeTTS_Audio_86f1a071ac.wav",
+    "nb_streams": "1",
+    "nb_programs": "0",
+    "nb_stream_groups": "0",
+    "format_name": "mp3",
+    "format_long_name": "MP2/3 (MPEG audio layer 2/3)",
+    "size": "41040",
+    "probe_score": "52"
+}
+2026-08-19 12:58:37 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 12:58:37 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 12:58:52 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 12:58:52 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 12:58:53 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\speech\1_EdgeTTS_Audio_86f1a071ac.wav'...
+2026-08-19 12:59:04 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\speech\21_Speech_Converted_2721c6b2c2.wav' in 11.48 seconds.
+2026-08-19 12:59:08 - INFO - ultimate_rvc.core.generate.common - Audio info:
+{
+    "index": "0",
+    "codec_name": "pcm_s16le",
+    "codec_long_name": "PCM signed 16-bit little-endian",
+    "profile": "unknown",
+    "codec_type": "audio",
+    "codec_tag_string": "[1][0][0][0]",
+    "codec_tag": "0x0001",
+    "sample_fmt": "s16",
+    "sample_rate": "40000",
+    "channels": "1",
+    "channel_layout": "unknown",
+    "bits_per_sample": "16",
+    "initial_padding": "0",
+    "id": "N/A",
+    "r_frame_rate": "0/0",
+    "avg_frame_rate": "0/0",
+    "time_base": "1/40000",
+    "start_pts": "N/A",
+    "start_time": "N/A",
+    "duration_ts": "272800",
+    "duration": "6.820000",
+    "bit_rate": "640051",
+    "max_bit_rate": "N/A",
+    "bits_per_raw_sample": "N/A",
+    "nb_frames": "N/A",
+    "nb_read_frames": "N/A",
+    "nb_read_packets": "N/A",
+    "DISPOSITION": {
+        "default": "0",
+        "dub": "0",
+        "original": "0",
+        "comment": "0",
+        "lyrics": "0",
+        "karaoke": "0",
+        "forced": "0",
+        "hearing_impaired": "0",
+        "visual_impaired": "0",
+        "clean_effects": "0",
+        "attached_pic": "0",
+        "timed_thumbnails": "0",
+        "non_diegetic": "0",
+        "captions": "0",
+        "descriptions": "0",
+        "metadata": "0",
+        "dependent": "0",
+        "still_image": "0",
+        "multilayer": "0"
+    },
+    "filename": "C:\\Users\\lmsou\\dev\\neolunamiku\\audio\\speech\\21_Speech_Converted_2721c6b2c2.wav",
+    "nb_streams": "1",
+    "nb_programs": "0",
+    "nb_stream_groups": "0",
+    "format_name": "wav",
+    "format_long_name": "WAV / WAVE (Waveform Audio)",
+    "size": "545644",
+    "probe_score": "99"
+}
+2026-08-19 12:59:15 - INFO - ultimate_rvc.core.generate.common - Audio info:
+{
+    "index": "0",
+    "codec_name": "mp3",
+    "codec_long_name": "MP3 (MPEG audio layer 3)",
+    "profile": "unknown",
+    "codec_type": "audio",
+    "codec_tag_string": "[0][0][0][0]",
+    "codec_tag": "0x0000",
+    "mime_codec_string": "mp4a.40.34",
+    "sample_fmt": "fltp",
+    "sample_rate": "24000",
+    "channels": "1",
+    "channel_layout": "mono",
+    "bits_per_sample": "0",
+    "initial_padding": "0",
+    "id": "N/A",
+    "r_frame_rate": "0/0",
+    "avg_frame_rate": "0/0",
+    "time_base": "1/14112000",
+    "start_pts": "0",
+    "start_time": "0.000000",
+    "duration_ts": "131410944",
+    "duration": "9.312000",
+    "bit_rate": "48000",
+    "max_bit_rate": "N/A",
+    "bits_per_raw_sample": "N/A",
+    "nb_frames": "N/A",
+    "nb_read_frames": "N/A",
+    "nb_read_packets": "N/A",
+    "DISPOSITION": {
+        "default": "0",
+        "dub": "0",
+        "original": "0",
+        "comment": "0",
+        "lyrics": "0",
+        "karaoke": "0",
+        "forced": "0",
+        "hearing_impaired": "0",
+        "visual_impaired": "0",
+        "clean_effects": "0",
+        "attached_pic": "0",
+        "timed_thumbnails": "0",
+        "non_diegetic": "0",
+        "captions": "0",
+        "descriptions": "0",
+        "metadata": "0",
+        "dependent": "0",
+        "still_image": "0",
+        "multilayer": "0"
+    },
+    "filename": "C:\\Users\\lmsou\\dev\\neolunamiku\\audio\\speech\\1_EdgeTTS_Audio_72e7bc32df.wav",
+    "nb_streams": "1",
+    "nb_programs": "0",
+    "nb_stream_groups": "0",
+    "format_name": "mp3",
+    "format_long_name": "MP2/3 (MPEG audio layer 2/3)",
+    "size": "55872",
+    "probe_score": "52"
+}
+2026-08-19 12:59:15 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\speech\1_EdgeTTS_Audio_72e7bc32df.wav'...
+2026-08-19 12:59:21 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\speech\21_Speech_Converted_4cb606f4a6.wav' in 5.46 seconds.
+2026-08-19 12:59:25 - INFO - ultimate_rvc.core.generate.common - Audio info:
+{
+    "index": "0",
+    "codec_name": "pcm_s16le",
+    "codec_long_name": "PCM signed 16-bit little-endian",
+    "profile": "unknown",
+    "codec_type": "audio",
+    "codec_tag_string": "[1][0][0][0]",
+    "codec_tag": "0x0001",
+    "sample_fmt": "s16",
+    "sample_rate": "40000",
+    "channels": "1",
+    "channel_layout": "unknown",
+    "bits_per_sample": "16",
+    "initial_padding": "0",
+    "id": "N/A",
+    "r_frame_rate": "0/0",
+    "avg_frame_rate": "0/0",
+    "time_base": "1/40000",
+    "start_pts": "N/A",
+    "start_time": "N/A",
+    "duration_ts": "372000",
+    "duration": "9.300000",
+    "bit_rate": "640037",
+    "max_bit_rate": "N/A",
+    "bits_per_raw_sample": "N/A",
+    "nb_frames": "N/A",
+    "nb_read_frames": "N/A",
+    "nb_read_packets": "N/A",
+    "DISPOSITION": {
+        "default": "0",
+        "dub": "0",
+        "original": "0",
+        "comment": "0",
+        "lyrics": "0",
+        "karaoke": "0",
+        "forced": "0",
+        "hearing_impaired": "0",
+        "visual_impaired": "0",
+        "clean_effects": "0",
+        "attached_pic": "0",
+        "timed_thumbnails": "0",
+        "non_diegetic": "0",
+        "captions": "0",
+        "descriptions": "0",
+        "metadata": "0",
+        "dependent": "0",
+        "still_image": "0",
+        "multilayer": "0"
+    },
+    "filename": "C:\\Users\\lmsou\\dev\\neolunamiku\\audio\\speech\\21_Speech_Converted_4cb606f4a6.wav",
+    "nb_streams": "1",
+    "nb_programs": "0",
+    "nb_stream_groups": "0",
+    "format_name": "wav",
+    "format_long_name": "WAV / WAVE (Waveform Audio)",
+    "size": "744044",
+    "probe_score": "99"
+}
+2026-08-19 13:04:03 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:04:03 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:04:23 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:04:23 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:04:24 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_6be6f35f8703496c82b1ea958f317ecf.mp3'...
+2026-08-19 13:04:33 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_6be6f35f8703496c82b1ea958f317ecf.wav' in 9.01 seconds.
+2026-08-19 13:04:34 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_06ce09b27a8b4cc5830e7a79b916ce6a.mp3'...
+2026-08-19 13:04:36 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_06ce09b27a8b4cc5830e7a79b916ce6a.wav' in 1.69 seconds.
+2026-08-19 13:05:22 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:05:22 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:05:39 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:05:39 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:05:40 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_c5dfb433a7864d518dc90af24e55492a.mp3'...
+2026-08-19 13:05:47 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_c5dfb433a7864d518dc90af24e55492a.wav' in 6.82 seconds.
+2026-08-19 13:05:48 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_2043059b27f8444cae9a4f8c19193d6c.mp3'...
+2026-08-19 13:05:50 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_2043059b27f8444cae9a4f8c19193d6c.wav' in 1.27 seconds.
+2026-08-19 13:05:51 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_923dd47bfe294994adfd81003d88e942.mp3'...
+2026-08-19 13:05:53 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_923dd47bfe294994adfd81003d88e942.wav' in 1.67 seconds.
+2026-08-19 13:06:53 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:06:53 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:07:06 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:07:06 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:07:07 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_f468d686f8404d64a19ad58fcf1b7655.mp3'...
+2026-08-19 13:07:13 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_f468d686f8404d64a19ad58fcf1b7655.wav' in 6.06 seconds.
+2026-08-19 13:07:14 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_a925d335ac6c4e4e9f1cdb4ff93fef91.mp3'...
+2026-08-19 13:07:15 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_a925d335ac6c4e4e9f1cdb4ff93fef91.wav' in 0.81 seconds.
+2026-08-19 13:07:16 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_76c2fa8bf04943508bb63bc5c320ab8e.mp3'...
+2026-08-19 13:07:17 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_76c2fa8bf04943508bb63bc5c320ab8e.wav' in 1.06 seconds.
+2026-08-19 13:08:19 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:08:19 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:08:33 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:08:33 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:08:34 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_0f5ba93feb7e45e2894923946fc89bf9.mp3'...
+2026-08-19 13:08:40 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_0f5ba93feb7e45e2894923946fc89bf9.wav' in 6.43 seconds.
+2026-08-19 13:08:42 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_53a077aaacd4426da822aab66850cfa3.mp3'...
+2026-08-19 13:08:42 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_53a077aaacd4426da822aab66850cfa3.wav' in 0.83 seconds.
+2026-08-19 13:10:41 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:10:41 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:10:59 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:10:59 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:11:00 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_2d9e35075d5d4f668ca3026d7353de84.mp3'...
+2026-08-19 13:11:10 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_2d9e35075d5d4f668ca3026d7353de84.wav' in 9.82 seconds.
+2026-08-19 13:13:29 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:13:29 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:13:42 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:13:42 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:13:42 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_4dc79650d28b45a2a352ba6c62b22a1c.mp3'...
+2026-08-19 13:13:48 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_4dc79650d28b45a2a352ba6c62b22a1c.wav' in 5.78 seconds.
+2026-08-19 13:13:50 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_746bf461fe1f4c61ac6c895c383c32fa.mp3'...
+2026-08-19 13:13:51 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_746bf461fe1f4c61ac6c895c383c32fa.wav' in 0.86 seconds.
+2026-08-19 13:30:23 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:30:24 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:30:34 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:30:34 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:30:35 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_c19a1b6fa0a74701b351cb4670768680.mp3'...
+2026-08-19 13:30:40 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_c19a1b6fa0a74701b351cb4670768680.wav' in 5.54 seconds.
+2026-08-19 13:36:02 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 13:36:02 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 13:36:15 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 13:36:15 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 13:36:16 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_90187184aa714191b0f0ed5ef8c9573f.wav'...
+2026-08-19 13:36:27 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_90187184aa714191b0f0ed5ef8c9573f.wav' in 11.59 seconds.
+2026-08-19 13:36:28 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_de779cb398384b31821d35d6972a8815.wav'...
+2026-08-19 13:36:28 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_de779cb398384b31821d35d6972a8815.wav' in 0.70 seconds.

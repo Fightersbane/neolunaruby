@@ -1,0 +1,12 @@
+# Install with the CUDA extra index so torch gets cu128 GPU wheels:
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+ultimate-rvc[cuda]
+discord.py[voice]
+python-dotenv
+kokoro-onnx
+# kokoro-onnx drags in plain onnxruntime which shadows the GPU build; keep the
+# CUDA-12-matched GPU build pinned (torch cu128 ships the matching DLLs)
+onnxruntime-gpu==1.23.2
+
+# dev
+pytest
