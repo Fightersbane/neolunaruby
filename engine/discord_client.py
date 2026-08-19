@@ -103,6 +103,21 @@ class MikuClient(discord.Client):
         except discord.HTTPException:
             pass
 
+    async def _denied(self, interaction: discord.Interaction) -> bool:
+        """Reply and return True when the caller is not on the allowlist.
+
+        Every command goes through this: anyone can install this app to their
+        own account, so the allowlist is the only thing standing between a
+        stranger and the owner's microphone and settings.
+        """
+        if self._allowed(interaction.user.id):
+            return False
+        await interaction.response.send_message(
+            f"You're not on the allowlist. Ask the owner to add your ID: `{interaction.user.id}`",
+            ephemeral=True,
+        )
+        return True
+
     # ---- commands --------------------------------------------------------
     def _register_commands(self) -> None:
         @self.tree.command(description="Speak a message in Miku's voice")
@@ -110,11 +125,7 @@ class MikuClient(discord.Client):
         @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
         @app_commands.describe(text="What Miku should say")
         async def say(interaction: discord.Interaction, text: str) -> None:
-            if not self._allowed(interaction.user.id):
-                await interaction.response.send_message(
-                    f"You're not on the allowlist. Ask the owner to add your ID: `{interaction.user.id}`",
-                    ephemeral=True,
-                )
+            if await self._denied(interaction):
                 return
             # visible reply = the text lands in the conversation as a transcript;
             # ephemeral = only the invoker sees the confirmation
@@ -134,6 +145,8 @@ class MikuClient(discord.Client):
         @self.tree.command(description="Bring Miku into your current voice channel")
         @app_commands.guild_only()
         async def join(interaction: discord.Interaction) -> None:
+            if await self._denied(interaction):
+                return
             state = interaction.user.voice
             if state is None or state.channel is None:
                 await interaction.response.send_message("You're not in a voice channel.", ephemeral=True)
@@ -149,6 +162,8 @@ class MikuClient(discord.Client):
         @app_commands.guild_only()
         @app_commands.describe(semitones="Semitones up (+) or down (-)")
         async def pitch(interaction: discord.Interaction, semitones: app_commands.Range[int, -12, 12]) -> None:
+            if await self._denied(interaction):
+                return
             from engine import pipeline
 
             pipeline.SETTINGS["n_semitones"] = semitones
@@ -158,6 +173,8 @@ class MikuClient(discord.Client):
         @app_commands.guild_only()
         @app_commands.describe(multiplier="1.0 = natural, up to 2.0")
         async def speed(interaction: discord.Interaction, multiplier: app_commands.Range[float, 0.5, 2.0]) -> None:
+            if await self._denied(interaction):
+                return
             from engine import pipeline
 
             pipeline.SETTINGS["speed"] = multiplier
@@ -166,6 +183,8 @@ class MikuClient(discord.Client):
         @self.tree.command(description="Switch the base TTS voice fed into the Miku model")
         @app_commands.guild_only()
         async def voice(interaction: discord.Interaction, name: str) -> None:
+            if await self._denied(interaction):
+                return
             from engine import pipeline
 
             if name not in pipeline.VOICE_PRESETS:
@@ -188,6 +207,8 @@ class MikuClient(discord.Client):
         @self.tree.command(description="Disconnect Miku from voice")
         @app_commands.guild_only()
         async def leave(interaction: discord.Interaction) -> None:
+            if await self._denied(interaction):
+                return
             vc = interaction.guild.voice_client
             if isinstance(vc, discord.VoiceClient) and vc.is_connected():
                 await vc.disconnect()
