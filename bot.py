@@ -27,16 +27,7 @@ MODEL_MISSING_MSG = (
 )
 
 
-def find_ffmpeg() -> str:
-    found = shutil.which("ffmpeg")
-    if found:
-        return found
-    # winget installs land here before a fresh shell picks up PATH
-    packages = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Packages"
-    for exe in packages.glob("Gyan.FFmpeg*/*/bin/ffmpeg.exe"):
-        return str(exe)
-    sys.exit("ffmpeg not found. Install it with: winget install Gyan.FFmpeg (then open a new terminal)")
-
+from engine.playback import find_ffmpeg
 
 FFMPEG = find_ffmpeg()
 

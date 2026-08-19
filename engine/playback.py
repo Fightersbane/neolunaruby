@@ -10,6 +10,22 @@ log = logging.getLogger(__name__)
 PREFERRED_HOSTAPI = "Windows WASAPI"
 
 
+def find_ffmpeg() -> str:
+    import os
+    import shutil
+    import sys
+    from pathlib import Path
+
+    found = shutil.which("ffmpeg")
+    if found:
+        return found
+    # winget installs land here before a fresh shell picks up PATH
+    packages = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Packages"
+    for exe in packages.glob("Gyan.FFmpeg*/*/bin/ffmpeg.exe"):
+        return str(exe)
+    sys.exit("ffmpeg not found. Install it with: winget install Gyan.FFmpeg (then open a new terminal)")
+
+
 def _normalize_devices(raw: list[dict], default_index: int) -> list[dict]:
     outs = [d for d in raw if d.get("max_output_channels", 0) > 0]
     # Windows lists every device once per host API (MME, DirectSound, WASAPI,
