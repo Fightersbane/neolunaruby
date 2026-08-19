@@ -373,3 +373,12 @@
 2026-08-19 13:36:27 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_90187184aa714191b0f0ed5ef8c9573f.wav' in 11.59 seconds.
 2026-08-19 13:36:28 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_de779cb398384b31821d35d6972a8815.wav'...
 2026-08-19 13:36:28 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_de779cb398384b31821d35d6972a8815.wav' in 0.70 seconds.
+2026-08-19 14:08:53 - INFO - faiss.loader - Loading faiss with AVX2 support.
+2026-08-19 14:08:53 - INFO - faiss.loader - Successfully loaded faiss with AVX2 support.
+2026-08-19 14:09:03 - INFO - ultimate_rvc.rvc.lib.algorithm.encoders - hidden_channels: 192
+2026-08-19 14:09:04 - INFO - ultimate_rvc.rvc.lib.algorithm.synthesizers - Using HiFi-GAN vocoder
+2026-08-19 14:09:04 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_8253d06ac0314266b865c3534550a638.wav'...
+2026-08-19 14:09:16 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_8253d06ac0314266b865c3534550a638.wav' in 11.90 seconds.
+2026-08-19 14:09:16 - INFO - engine.pipeline - Warmup synthesis took 31.3s
+2026-08-19 14:09:17 - INFO - ultimate_rvc.rvc.infer.infer - Converting audio 'C:\Users\lmsou\dev\neolunamiku\audio\output\tts_9157e261dd4047cfa6aa1bc0c64ba362.wav'...
+2026-08-19 14:09:18 - INFO - ultimate_rvc.rvc.infer.infer - Conversion completed at 'C:\Users\lmsou\dev\neolunamiku\audio\output\miku_9157e261dd4047cfa6aa1bc0c64ba362.wav' in 1.25 seconds.
