@@ -2,6 +2,12 @@
 
 Studio rules arrive from the neolunadev-backbone plugin. Resume: HANDOFF.md.
 
+**Pending rebrand (decided 2026-10-14): this project is now Ruby.** The repo was renamed
+from neolunamiku to `neolunadev/ruby`. At the start of the next session here, before other
+work, rebrand the project to Ruby: app and window names, installer, updater remote,
+README, CHANGELOG, VERSION notes and user-visible copy. First ask Luke whether the voice
+itself stays Miku (the labels below say "Miku") or changes too. Delete this note when done.
+
 Accessibility tool: the user types, a Hatsune Miku voice speaks into a virtual
 microphone or a Discord voice channel. Strictly private, non-commercial use -
 never redistribute the Miku RVC model or any generated voice content. Public
