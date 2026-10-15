@@ -7,6 +7,7 @@
 
 ## Next steps, in order
 
+0. Rebrand the project to Ruby (see the pending note at the top of `CLAUDE.md`). The repo is now `neolunadev/ruby`.
 1. Voice fidelity milestone: the spoken output adds or expands words ("I'm" is spoken "I am", "love you" is spoken "I love you"). Hypothesis, untested: Kokoro speaks the text it is given, so the change happens before Kokoro, in input transcription or a text rewrite step. Start with `superpowers:systematic-debugging` and trace the text from input to `engine/pipeline.py`.
 2. Voice quality: RVC and Kokoro tuning.
 
